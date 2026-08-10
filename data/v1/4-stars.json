@@ -25,7 +25,7 @@
   },
   {
     "Not For Broadcast": {
-      "desc": "The music begins after the airlock at Door 0, starting a countdown of 4 minutes and 43 seconds. The timer appears at 4 minutes and 20 seconds and ends when the first button at the end of The Ridge is pressed. An extremely large red border pulses on screen when using Deaf Mode, nullifying its effects.",
+      "desc": "The music begins after the airlock at Door 0, starting a countdown of 4 minutes and 43 seconds. The timer appears at 4 minutes and 20 seconds and ends when the first button at the end of The Ridge is pressed.",
       "boost": 40
     }
   },
