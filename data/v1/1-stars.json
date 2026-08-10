@@ -1,7 +1,7 @@
 [
   {
     "Admin Panel": {
-      "desc": "No encounter. Grants access to the Admin Panel.",
+      "desc": "Grants access to the Admin Panel.",
       "boost": -1000
     }
   },
