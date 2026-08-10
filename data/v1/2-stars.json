@@ -1,0 +1,122 @@
+[
+  {
+    "Guest Stars: Rooms": {
+      "desc": "Added A-60, A-200, Bleach and No Good to the roster, A-60 and Bleach is like Angler, A-200 locks on you and goes through wall, No Good is behind unopened door and must wait for him gone first before opening.",
+      "boost": 30
+    }
+  },
+  {
+    "Weeper": {
+      "desc": "Break line of sight from Eden Trees. Look away, down and crouch is recommended.",
+      "boost": 10
+    }
+  },
+  {
+    "Its you! its me!": {
+      "desc": "Coagulate spawns more often, if caught, you're controlled by it temporarily.",
+      "boost": 10
+    }
+  },
+  {
+    "Gone Fishin": {
+      "desc": " Added Bobber Fish, stand still when eye opened, can keep moving when not yet opened.",
+      "boost": 15
+    }
+  },
+  {
+    "Kitty Clock": {
+      "desc": "Gives you Kitty Clock, twist to set back timer but too far will break it. Must use it when alarm plays.",
+      "boost": 20
+    }
+  },
+  {
+    "Cereal": {
+      "desc": "Skinless spawns more often, try to look away from him as he'll force you to look at him.",
+      "boost": 5
+    }
+  },
+  {
+    "Always Eyefestation": {
+      "desc": "Any chances where Eyefestation can spawn, it will spawn.",
+      "boost": 10
+    }
+  },
+  {
+    "Enraged Eyefestation": {
+      "desc": "Eyefestation will always spawn when it could and will be enraged by default.",
+      "boost": 20
+    }
+  },
+  {
+    "NAVIgation Malfunction": {
+      "desc": "NAVI doesn't keep count of door for you anymore, except Heavy Containment.",
+      "boost": 5
+    }
+  },
+  {
+    "Budget Cutbacks": {
+      "desc": "Tools last half as long, don't use it when unnecessary.",
+      "boost": 10
+    }
+  },
+  {
+    "Night Light: Off": {
+      "desc": "No visual indicator for mines, watch your step.",
+      "boost": 5
+    }
+  },
+  {
+    "Art Portfolio": {
+      "desc": "P.AI.nter shows you art, you can close his pop ups.",
+      "boost": 10
+    }
+  },
+  {
+    "DOORS STUCK": {
+      "desc": "Some door may stay stuck, you might need to kick it.",
+      "boost": 5
+    }
+  },
+  {
+    "Glue": {
+      "desc": "Some drawer will require more press to open.",
+      "boost": 5
+    }
+  },
+  {
+    "Wet Floor? All Clean!": {
+      "desc": "All puddle of void mass water puddle are cleaned, thought visual indicator in the locker still shows.",
+      "boost": 5
+    }
+  },
+  {
+    "Butterfingers": {
+      "desc": "Your item can slip off your hand, only hold when necessary.",
+      "boost": 5
+    }
+  },
+  {
+    "Squid+": {
+      "desc": "Don't stay too close to squiddles, it will attack way faster than normal and leaves temporary ink cover.",
+      "boost": 5
+    }
+  },
+  {
+    "Sitcom": {
+      "desc": "Laughing SFX plays when you take damage, so avoid that.",
+      "boost": 5
+    }
+  },
+  {
+    "Freeze Frame": {
+      "desc": "Frame frozen when you take any damage, may cause some issue to sensitive people.",
+      "boost": 5
+    }
+  },
+  {
+    "Restless Dreams": {
+      "desc": "Added thick black fog to your entire run, cannot be removed.",
+      "boost": 10
+    }
+  }
+]

@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modifier Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<div class="scanlines" aria-hidden="true"></div>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="brand">
+      <span class="brand-mark">&#9670;</span>
+      <h1 class="brand-title">MODIFIER<span class="brand-title-accent">//</span>CONSOLE</h1>
+    </div>
+    <div class="masthead-actions">
+      <label class="version-select-wrap">
+        <span class="version-select-label">Version</span>
+        <select id="version-select" class="version-select" aria-label="Data version"></select>
+      </label>
+      <button id="permalink-btn" class="btn btn-ghost" type="button">
+        <span class="btn-icon">&#128279;</span> Copy Permalink
+      </button>
+      <button id="reset-btn" class="btn btn-ghost btn-danger" type="button">
+        <span class="btn-icon">&#10005;</span> Reset
+      </button>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Star tiers">
+  <button class="tab active" data-tab="all" role="tab" aria-selected="true">All</button>
+  <button class="tab" data-tab="1" role="tab" aria-selected="false">1 Stars</button>
+  <button class="tab" data-tab="2" role="tab" aria-selected="false">2 Stars</button>
+  <button class="tab" data-tab="3" role="tab" aria-selected="false">3 Stars</button>
+  <button class="tab" data-tab="4" role="tab" aria-selected="false">4 Stars</button>
+</nav>
+
+<main class="layout">
+
+  <section class="panel modifier-panel" aria-label="Modifier list">
+    <div class="panel-head">
+      <span class="panel-head-label" id="list-title">All Modifiers</span>
+      <span class="panel-head-count" id="list-count">0 entries</span>
+    </div>
+    <div id="modifier-list" class="modifier-list">
+      <!-- rows injected by app.js -->
+    </div>
+  </section>
+
+  <aside class="panel summary-panel" aria-label="Selected modifiers summary">
+    <div class="panel-head">
+      <span class="panel-head-label">// Summary</span>
+      <span class="panel-head-count" id="selected-count">0 selected</span>
+    </div>
+
+    <div id="summary-list" class="summary-list">
+      <p class="empty-state">No modifiers queued. Select entries from the list to begin.</p>
+    </div>
+
+    <div class="boost-readout">
+      <span class="boost-readout-label">Total Boost</span>
+      <span class="boost-readout-value" id="total-boost">0%</span>
+    </div>
+
+    <div class="star-gauge" id="star-gauge" aria-label="Star rating gauge">
+      <div class="star-gauge-head">
+        <span id="star-band-label" class="star-band-label">0 STAR</span>
+        <span id="star-next-label" class="star-next-label"></span>
+      </div>
+      <div class="star-gauge-track" id="star-gauge-track">
+        <div class="star-gauge-fill" id="star-gauge-fill"></div>
+        <div class="star-gauge-ticks" id="star-gauge-ticks"></div>
+      </div>
+      <div class="star-icons" id="star-icons"></div>
+    </div>
+  </aside>
+
+</main>
+
+<div id="desc-popover" class="desc-popover" hidden>
+  <div class="desc-popover-title" id="desc-popover-title"></div>
+  <div class="desc-popover-label">How to encounter</div>
+  <div class="desc-popover-body" id="desc-popover-body"></div>
+</div>
+
+<div id="toast" class="toast" hidden></div>
+
+<script src="js/app.js"></script>
+</body>
+</html>

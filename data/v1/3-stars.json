@@ -1,0 +1,62 @@
+[ 
+  {
+    "Shallow Pockets": {
+      "desc": "Must not have more than four unique items, you'll drop any item picked up after.",
+      "boost": 5
+    }
+  },
+  {
+    "You Only Have Two Hands": {
+      "desc": "Must not have more than two unique items, you'll drop any item picked up after.",
+      "boost": 15
+    }
+  },
+  {
+    "I Always Come Back": {
+      "desc": "An immortal wall dweller spawn and chase you throughout the entire game, look back occasionally.",
+      "boost": 15
+    }
+  },
+  {
+    "Porous Walls": {
+      "desc": "Any node can see you, including Pandemonium. It is not recommended to pair with Pure Pandemonium.",
+      "boost": 10
+    }
+  },
+  {
+    "Hot Potato": {
+      "desc": "When you hear a beep or see white triangle, crouch to survive.",
+      "boost": 10
+    }
+  },
+  {
+    "Landyours": {
+      "desc": "More landmine will now spawn, watch your steps.",
+      "boost": 15
+    }
+  },
+  {
+    "Explosive Storage": {
+      "desc": "Any drawer may contain landmine, step away immediately when you heard or saw it.",
+      "boost": 10
+    }
+  },
+  {
+    "Subspace Tripmine": {
+      "desc": "Any landmine becomes Subspace Tripmine, which is more transparent than landmine. Be extra cautious when walking, especially dark rooms.",
+      "boost": 10
+    }
+  },
+  {
+    "Friendly": {
+      "desc": "Imaginary Friend spawns every 20 rooms, harmless.",
+      "boost": 5
+    }
+  },
+  {
+    "Deception": {
+      "desc": "Pandemonium will mimic the audio and appearance of Angler or any of its variants. Upon spotting the player, it will behave as it usually does.",
+      "boost": 10
+    }
+  }
+]
