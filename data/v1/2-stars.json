@@ -1,121 +1,121 @@
 [
   {
     "Guest Stars: Rooms": {
-      "desc": "Added A-60, A-200, Bleach and No Good to the roster, A-60 and Bleach is like Angler, A-200 locks on you and goes through wall, No Good is behind unopened door and must wait for him gone first before opening.",
+      "desc": "Adds A-60, A-200, Bleach, and No Good to the roster. A-60 and Bleach work like the Angler, A-200 will pathfind to you, and No Good will attack if you open the next room's door too early, wait out his laugh.",
       "boost": 30
     }
   },
   {
     "Weeper": {
-      "desc": "Break line of sight from Eden Trees. Look away, down and crouch is recommended.",
+      "desc": "Eden trees may spawn, break line of sight from them. If static fills your screen, you will be killed",
       "boost": 10
     }
   },
   {
     "Its you! its me!": {
-      "desc": "Coagulate spawns more often, if caught, you're controlled by it temporarily.",
+      "desc": "Coagulate spawns more often, if caught, you are controlled by it for 30 seconds.",
       "boost": 10
     }
   },
   {
     "Gone Fishin": {
-      "desc": " Added Bobber Fish, stand still when eye opened, can keep moving when not yet opened.",
+      "desc": "Adds Bobber Fish to the roster, stand still when its eye opens, can keep moving when not yet opened.",
       "boost": 15
     }
   },
   {
     "Kitty Clock": {
-      "desc": "Gives you Kitty Clock, twist to set back timer but too far will break it. Must use it when alarm plays.",
+      "desc": "Gives you the Kitty Clock, twist to wind back the clock, but twisting too long will break the key. Hit it when it screams, will drain your health while screaming.",
       "boost": 20
     }
   },
   {
     "Cereal": {
-      "desc": "Skinless spawns more often, try to look away from him as he'll force you to look at him.",
+      "desc": "Skinless Corpse spawns more often, and will deal damage when caught. Look away to make it disappear.",
       "boost": 5
     }
   },
   {
     "Always Eyefestation": {
-      "desc": "Any chances where Eyefestation can spawn, it will spawn.",
+      "desc": "If Eyefestation can spawn, it will.",
       "boost": 10
     }
   },
   {
     "Enraged Eyefestation": {
-      "desc": "Eyefestation will always spawn when it could and will be enraged by default.",
+      "desc": "If Eyefestation can spawn, it will. Will also now start off Enraged.",
       "boost": 20
     }
   },
   {
     "NAVIgation Malfunction": {
-      "desc": "NAVI doesn't keep count of door for you anymore, except Heavy Containment.",
+      "desc": "NAVI no longer keeps door count, except for in Heavy Containment.",
       "boost": 5
     }
   },
   {
     "Budget Cutbacks": {
-      "desc": "Tools last half as long, don't use it when unnecessary.",
+      "desc": "Tools last half as long, only use them when necessary.",
       "boost": 10
     }
   },
   {
     "Night Light: Off": {
-      "desc": "No visual indicator for mines, watch your step.",
+      "desc": "Watch your step, tripwires will no longer be lit up.",
       "boost": 5
     }
   },
   {
     "Art Portfolio": {
-      "desc": "P.AI.nter shows you art, you can close his pop ups.",
+      "desc": "P.AI.nter will block your screen with art, you can close his pop ups, otherwise they will disappear after some time.",
       "boost": 10
     }
   },
   {
     "DOORS STUCK": {
-      "desc": "Some door may stay stuck, you might need to kick it.",
+      "desc": "Some doors may become stuck, kick them open.",
       "boost": 5
     }
   },
   {
     "Glue": {
-      "desc": "Some drawer will require more press to open.",
+      "desc": "Drawers may require multiple tries to open up.",
       "boost": 5
     }
   },
   {
     "Wet Floor? All Clean!": {
-      "desc": "Puddle of Void Mass puddles are gone, though visual indicator/glowing eyes in the locker will still show.",
+      "desc": "Puddles of Void Mass no longer leave puddles, and will no longer breathe, watch out for their eyes instead.",
       "boost": 5
     }
   },
   {
     "Butterfingers": {
-      "desc": "Your item can slip off your hand, only hold when necessary.",
+      "desc": "Equipping an item may cause it to drop, only equip one when necessary.",
       "boost": 5
     }
   },
   {
     "Squid+": {
-      "desc": "Don't stay too close to squiddles, it will attack way faster than normal and leaves temporary ink cover.",
+      "desc": "Squiddles anger faster, and will leave residue on your screen if they scare you.",
       "boost": 5
     }
   },
   {
     "Sitcom": {
-      "desc": "Laughing SFX plays when you take damage, so avoid that.",
+      "desc": "When taking any damage, an audience will laugh at you.",
       "boost": 5
     }
   },
   {
     "Freeze Frame": {
-      "desc": "Frame frozen when you take any damage, may cause some issue to sensitive people.",
+      "desc": "When taking any damage, a freeze frame will block your screen, may trigger those sensitive to lights.",
       "boost": 5
     }
   },
   {
     "Restless Dreams": {
-      "desc": "Added thick black fog to your entire run, cannot be removed.",
+      "desc": "Thick fog surrounds you, you cannot see more than a few feet in front of you.",
       "boost": 10
     }
   }
