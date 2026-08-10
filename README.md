@@ -23,7 +23,6 @@ pressure
 │   │   └── [F] stars-map.json
 │   └── [F] versions.json
 ├── [D] fonts
-│   ├── [F] .gitkeep
 │   └── [*] Zekton.ttf
 ├── [F] index.html
 └── [D] js
