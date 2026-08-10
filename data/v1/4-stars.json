@@ -19,7 +19,7 @@
   },
   {
     "Interloper": {
-      "desc": "Lopee follows you everywhere, you must keep going.",
+      "desc": "Lopee follows you everywhere, you must keep going. On contact of him, you'll die instantly.",
       "boost": 25
     }
   },
