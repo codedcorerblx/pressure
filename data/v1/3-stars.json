@@ -19,7 +19,7 @@
   },
   {
     "Porous Walls": {
-      "desc": "Nodes, including Pandemonium, can see you through walls, not recommended with Pure Pandemonium.",
+      "desc": "Nodes, including Pandemonium, can see you through walls, not recommended with \"Pure Pandemonium\".",
       "boost": 10
     }
   },
