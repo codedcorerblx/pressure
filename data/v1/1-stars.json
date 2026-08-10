@@ -1,7 +1,7 @@
 [
   {
     "Admin Panel": {
-      "desc": "No encounter. Gives you access to admin panel.",
+      "desc": "No encounter. Grants access to the Admin Panel.",
       "boost": -1000
     }
   },
@@ -19,7 +19,7 @@
   },
   {
     "Up The Hate": {
-      "desc": "Node spawns largly increased.",
+      "desc": "Node spawns largely increased.",
       "boost": 20
     }
   },
