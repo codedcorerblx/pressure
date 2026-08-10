@@ -19,13 +19,13 @@
   },
   {
     "Gone Fishin": {
-      "desc": "Adds Bobber Fish to the roster, stand still when its eye opens, can keep moving when not yet opened.",
+      "desc": "Adds Bobber Fish to the roster, stand still when its eye opens, can keep moving while not yet opened.",
       "boost": 15
     }
   },
   {
     "Kitty Clock": {
-      "desc": "Gives you the Kitty Clock, twist to wind back the clock, but twisting too long will break the key. Hit it when it screams, will drain your health while screaming.",
+      "desc": "Gives you the Kitty Clock, twist to wind back the clock, but winding too long will break the key. Hit it when it screams, will drain your health while screaming.",
       "boost": 20
     }
   },
@@ -49,7 +49,7 @@
   },
   {
     "NAVIgation Malfunction": {
-      "desc": "NAVI no longer keeps door count, except for in Heavy Containment.",
+      "desc": "NAVI no longer keeps door count, except in Heavy Containment.",
       "boost": 5
     }
   },
@@ -85,7 +85,7 @@
   },
   {
     "Wet Floor? All Clean!": {
-      "desc": "Puddles of Void Mass no longer leave puddles, and will no longer breathe, watch out for their eyes instead.",
+      "desc": "Puddles of Void Mass no longer leave puddles, and will no longer breathe. Watch out for their eyes instead.",
       "boost": 5
     }
   },
@@ -115,7 +115,7 @@
   },
   {
     "Restless Dreams": {
-      "desc": "Thick fog surrounds you, you cannot see more than a few feet in front of you.",
+      "desc": "Your vision is lessened, thick fog surrounds you.",
       "boost": 10
     }
   }
