@@ -612,7 +612,7 @@
 
         var how = document.createElement("div");
         how.className = "summary-item-how";
-        how.textContent = "How to encounter";
+        how.textContent = "Description";
 
         var desc = document.createElement("div");
         desc.className = "summary-item-desc";
