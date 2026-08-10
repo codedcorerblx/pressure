@@ -32,6 +32,7 @@ pressure
 
 ## Details
 **Type**: `static`
+
 This project mainly use JSON for data management, such as modifiers list from one to four stars, mapping for each star and such. Everything is handled by `js/app.js`.
 
 ## License
