@@ -25,7 +25,7 @@
   },
   {
     "Hot Potato": {
-      "desc": "Crouch when warned with beeping or an indicator, otherwise death will follow.",
+      "desc": "An indicator and beeping will warn you to crouch, otherwise you will be killed.",
       "boost": 10
     }
   },
@@ -49,7 +49,7 @@
   },
   {
     "Friendly": {
-      "desc": "A new Imaginary Friend spawns every 20 rooms, otherwise harmles.",
+      "desc": "A new Imaginary Friend spawns every 20 rooms, otherwise harmless.",
       "boost": 5
     }
   },

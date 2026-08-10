@@ -7,7 +7,7 @@
   },
   {
     "Weeper": {
-      "desc": "Eden trees may spawn, break line of sight from them. If static fills your screen, you will be killed",
+      "desc": "Eden trees may spawn, break line of sight from them. If static fills your screen, you will be killed.",
       "boost": 10
     }
   },
@@ -43,7 +43,7 @@
   },
   {
     "Enraged Eyefestation": {
-      "desc": "If Eyefestation can spawn, it will. Will also now start off Enraged.",
+      "desc": "If Eyefestation can spawn, it will. Will also now start off enraged.",
       "boost": 20
     }
   },

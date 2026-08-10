@@ -1,13 +1,13 @@
 [ 
   {
     "Chaos!": {
-      "desc": "Let RNG decide your fate, fakes polls from Streamer Polls.",
+      "desc": "Let RNG decide your fate, fakes polls from \"Streamer Polls\".",
       "boost": 50
     }
   },
   {
     "Pure Pandemonium": {
-      "desc": "Pandemonium will replace any node spawn, safe spots are no longer enough.",
+      "desc": "Safe spots are no longer enough, Pandemonium will replace any node spawn.",
       "boost": 40
     }
   },
@@ -25,7 +25,7 @@
   },
   {
     "Not For Broadcast": {
-      "desc": "Upon entering the Ridge, a 4 minute and 43 second countdown starts, and will only stop when all have hit the \"Voted To End this Madness\" button. If the timer reaches zero, you will be killed.",
+      "desc": "Upon entering the Ridge, loud music and a 4 minute and 43 second countdown start, and will only stop when all have hit the \"Voted To End this Madness\" button. If the timer reaches zero, you will be killed.",
       "boost": 40
     }
   },
