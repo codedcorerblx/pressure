@@ -1,55 +1,55 @@
 [ 
   {
     "Chaos!": {
-      "desc": "Random Number Generator (RNG) decides the outcome of what spawns, be sure to keep an eye out for any node spawn from it.",
+      "desc": "Let RNG decide your fate, fakes polls from \"Streamer Polls\".",
       "boost": 50
     }
   },
   {
     "Pure Pandemonium": {
-      "desc": "All node entities became Pandemonium, so don't try using Safe Spots.",
+      "desc": "Safe spots are no longer enough, Pandemonium will replace any node spawn.",
       "boost": 40
     }
   },
   {
     "3AM Challenge": {
-      "desc": "Witching Hour will follow you throughout the entire run, look at it to keep it away temporarily.",
+      "desc": "Witching Hour will follow you throughout the run, look at it to scare it off temporarily.",
       "boost": 25
     }
   },
   {
     "Interloper": {
-      "desc": "Lopee follows you everywhere, you must keep going. On contact of him, you'll die instantly.",
+      "desc": "Lopee will follow you throughout the run, instantly killing you if it reaches you.",
       "boost": 25
     }
   },
   {
     "Not For Broadcast": {
-      "desc": "The music begins after the airlock at Door 0, starting a countdown of 4 minutes and 43 seconds. The timer appears at 4 minutes and 20 seconds and ends when the first button at the end of The Ridge is pressed.",
+      "desc": "Upon entering the Ridge, loud music and a 4 minute and 43 second countdown start, and will only stop when all have hit the \"Voted To End this Madness\" button. If the timer reaches zero, you will be killed.",
       "boost": 40
     }
   },
   {
     "Rat Race": {
-      "desc": "When the first door is opened, you start with 50 researches. Every step you take will cost you a research, any collected researches are shared across players, but doesn't reduce on all players. If you have none, you take damage for every step. The collected research is also increased by 50% automatically.",
+      "desc": "Upon opening the first door, you will be given 50 research, each step costs research, any research collected is shared across players, and is increased by 50%. Taking steps while having no research causes you to take damage.",
       "boost": 30
     }
   },
   {
     "Noodle Legs": {
-      "desc": "Any damage you took (including from items like SPR-INT) will ragdoll you, worst case scenario is being forced to stare at an Eyefestation without options.",
+      "desc": "Any damage taken, including from SPR-INTs, will cause you to ragdoll, may softlock you until death if caught in the wrong spot.",
       "boost": 25
     }
   },
   {
     "Lock In": {
-      "desc": "Dying before door 50 nullifies the bonuses of all modifiers and reduces rewards by 75%",
+      "desc": "Dying before door 50 nullifies the bonuses of all modifiers and reduces rewards by 75%.",
       "boost": 10
     }
   },
   {
     "All Or Nothing": {
-      "desc": "Dying at all nullifies the bonuses of all modifiers and reduced rewards by 75%.",
+      "desc": "Dying at all nullifies the bonuses of all modifiers and reduces rewards by 75%.",
       "boost": 30
     }
   }
