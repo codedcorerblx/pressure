@@ -1,16 +1,16 @@
 /* ============================================================
-   MODIFIER CONSOLE â€” app.js
+   MODIFIER CONSOLE — app.js
    Reads data/versions.json to discover available data versions,
    then for the active version reads
      data/<version>/1-stars.json .. 4-stars.json + stars-map.json
-     data/<version>/conflict.json (optional â€” mutually-exclusive mods)
+     data/<version>/conflict.json (optional — mutually-exclusive mods)
    Assigns global sequential IDs to every modifier in array order
-   (order is preserved exactly as written â€” boosts are NOT assumed
+   (order is preserved exactly as written — boosts are NOT assumed
    to be sorted). Renders a selectable list, tracks totals, and
    builds/reads shareable permalinks of the form
      ?b=<bitset-packed, base64url selected modifier ids>&cf=<version slug>
    ("b" packs one bit per possible id into bytes then base64url-encodes
-   them â€” length depends only on the highest id in the version, not on
+   them — length depends only on the highest id in the version, not on
    how many are selected, which keeps the URL short.)
    IDs are only meaningful within the version they came from, which
    is why the version slug travels alongside the selection in every
@@ -18,7 +18,7 @@
 
    Data is always fetched fresh (cache: "no-store", no localStorage
    caching of the JSON payload) so editing the JSON files and
-   reloading the page always shows the latest content â€” no need to
+   reloading the page always shows the latest content — no need to
    clear the browser cache.
    ============================================================ */
 
@@ -184,8 +184,8 @@
   /**
    * Load a version's data, rebuild the registry, and (re)hydrate
    * selection state, then render.
-   * options.fromURL        â€” true on initial page load: honor ?b= for this version
-   * options.clearSelection â€” true when the user manually switches
+   * options.fromURL        — true on initial page load: honor ?b= for this version
+   * options.clearSelection — true when the user manually switches
    *                          versions via the dropdown: start from
    *                          that version's own cached selection (if any)
    */
@@ -229,7 +229,7 @@
         tiersData["4"] = results[3] || [];
         starMap = results[4] || starMap;
 
-        // conflict.json is optional â€” a version with no conflicts simply
+        // conflict.json is optional — a version with no conflicts simply
         // doesn't ship the file, or ships { "conflicted": [] }.
         return fetchJSONOptional(dir + "conflict.json");
       })
@@ -249,7 +249,7 @@
   }
 
   // Like fetchJSON, but a missing/invalid file resolves to null instead
-  // of rejecting the whole version load â€” used for the optional
+  // of rejecting the whole version load — used for the optional
   // conflict.json.
   function fetchJSONOptional(path) {
     return fetch(path, { cache: "no-store" })
@@ -266,7 +266,7 @@
 
   // Each tier file is a flat array, in display order, of single-key
   // objects: [{ "Mod Name": { "desc": "...", "boost": 5 } }, ...]
-  // Order in the array is preserved as-is (boosts are NOT sorted â€”
+  // Order in the array is preserved as-is (boosts are NOT sorted —
   // a file can legitimately go 5, 10, 5, 15, 10, 40, ...).
   // The inner object's keys aren't assumed to be named exactly "desc"/
   // "boost": any string value found is treated as the description and
@@ -316,7 +316,7 @@
 
   /* ---------------- conflicts ---------------- */
 
-  // Expected file shape (valid JSON â€” the format in the original request
+  // Expected file shape (valid JSON — the format in the original request
   // wasn't valid JSON, so this is the corrected version of it):
   //   { "conflicted": [ ["Mod A", "Mod B"], ["Mod C", "Mod D", "Mod E"] ] }
   // Each inner array is a group of modifiers that are all mutually
@@ -434,7 +434,7 @@
 
   // Bitset encoding: one bit per possible modifier id (bit n set = id n
   // selected), packed into bytes, then base64url'd. Cost is fixed at
-  // ceil((maxId+1)/8) bytes regardless of how many ids are selected â€”
+  // ceil((maxId+1)/8) bytes regardless of how many ids are selected —
   // e.g. ~57 modifiers packs into 8 bytes / ~11 characters whether 1 or
   // 40 of them are selected, which is far shorter than base64-encoding
   // a comma-separated id list (which grows with the selection size).
@@ -568,7 +568,7 @@
         var names = currentBlockers
           .map(function (id) { return byId[id] ? byId[id].name : null; })
           .filter(Boolean);
-        showToast("Conflicts with " + names.join(", ") + " â€” deselect it first");
+        showToast("Conflicts with " + names.join(", ") + " — deselect it first");
         return;
       }
       toggleSelection(entry.id);
