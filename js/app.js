@@ -1,21 +1,24 @@
 /* ============================================================
-   MODIFIER CONSOLE — app.js
+   MODIFIER CONSOLE â€” app.js
    Reads data/versions.json to discover available data versions,
    then for the active version reads
      data/<version>/1-stars.json .. 4-stars.json + stars-map.json
-     data/<version>/conflict.json (optional — mutually-exclusive mods)
+     data/<version>/conflict.json (optional â€” mutually-exclusive mods)
    Assigns global sequential IDs to every modifier in array order
-   (order is preserved exactly as written — boosts are NOT assumed
+   (order is preserved exactly as written â€” boosts are NOT assumed
    to be sorted). Renders a selectable list, tracks totals, and
    builds/reads shareable permalinks of the form
-     ?b=<base64 of comma-separated selected modifier ids>&cf=<version slug>
+     ?b=<bitset-packed, base64url selected modifier ids>&cf=<version slug>
+   ("b" packs one bit per possible id into bytes then base64url-encodes
+   them â€” length depends only on the highest id in the version, not on
+   how many are selected, which keeps the URL short.)
    IDs are only meaningful within the version they came from, which
    is why the version slug travels alongside the selection in every
    permalink and in local storage.
 
    Data is always fetched fresh (cache: "no-store", no localStorage
    caching of the JSON payload) so editing the JSON files and
-   reloading the page always shows the latest content — no need to
+   reloading the page always shows the latest content â€” no need to
    clear the browser cache.
    ============================================================ */
 
@@ -181,8 +184,8 @@
   /**
    * Load a version's data, rebuild the registry, and (re)hydrate
    * selection state, then render.
-   * options.fromURL        — true on initial page load: honor ?b= for this version
-   * options.clearSelection — true when the user manually switches
+   * options.fromURL        â€” true on initial page load: honor ?b= for this version
+   * options.clearSelection â€” true when the user manually switches
    *                          versions via the dropdown: start from
    *                          that version's own cached selection (if any)
    */
@@ -226,7 +229,7 @@
         tiersData["4"] = results[3] || [];
         starMap = results[4] || starMap;
 
-        // conflict.json is optional — a version with no conflicts simply
+        // conflict.json is optional â€” a version with no conflicts simply
         // doesn't ship the file, or ships { "conflicted": [] }.
         return fetchJSONOptional(dir + "conflict.json");
       })
@@ -246,7 +249,7 @@
   }
 
   // Like fetchJSON, but a missing/invalid file resolves to null instead
-  // of rejecting the whole version load — used for the optional
+  // of rejecting the whole version load â€” used for the optional
   // conflict.json.
   function fetchJSONOptional(path) {
     return fetch(path, { cache: "no-store" })
@@ -263,7 +266,7 @@
 
   // Each tier file is a flat array, in display order, of single-key
   // objects: [{ "Mod Name": { "desc": "...", "boost": 5 } }, ...]
-  // Order in the array is preserved as-is (boosts are NOT sorted —
+  // Order in the array is preserved as-is (boosts are NOT sorted â€”
   // a file can legitimately go 5, 10, 5, 15, 10, 40, ...).
   // The inner object's keys aren't assumed to be named exactly "desc"/
   // "boost": any string value found is treated as the description and
@@ -313,7 +316,7 @@
 
   /* ---------------- conflicts ---------------- */
 
-  // Expected file shape (valid JSON — the format in the original request
+  // Expected file shape (valid JSON â€” the format in the original request
   // wasn't valid JSON, so this is the corrected version of it):
   //   { "conflicted": [ ["Mod A", "Mod B"], ["Mod C", "Mod D", "Mod E"] ] }
   // Each inner array is a group of modifiers that are all mutually
@@ -383,7 +386,7 @@
 
     // Only trust ?b= for the version it was generated against.
     if (b && cf === slug) {
-      var ids = decodeB64Ids(b);
+      var ids = decodeSequence(b);
       if (ids.length) {
         selected = new Set(ids.filter(function (id) { return !!byId[id]; }));
         return;
@@ -422,25 +425,48 @@
     url.searchParams.set("cf", currentVersion);
     if (selected.size) {
       var ids = Array.from(selected).sort(function (a, b) { return a - b; });
-      url.searchParams.set("b", encodeB64Ids(ids));
+      url.searchParams.set("b", encodeSequence(ids));
     } else {
       url.searchParams.delete("b");
     }
     window.history.replaceState({}, "", url.toString());
   }
 
-  function encodeB64Ids(ids) {
-    var str = ids.join(",");
-    return encodeURIComponent(btoa(str));
+  // Bitset encoding: one bit per possible modifier id (bit n set = id n
+  // selected), packed into bytes, then base64url'd. Cost is fixed at
+  // ceil((maxId+1)/8) bytes regardless of how many ids are selected â€”
+  // e.g. ~57 modifiers packs into 8 bytes / ~11 characters whether 1 or
+  // 40 of them are selected, which is far shorter than base64-encoding
+  // a comma-separated id list (which grows with the selection size).
+  // No encodeURIComponent needed: "-" and "_" are already URL-safe.
+  function encodeSequence(values) {
+    if (!values.length) return "";
+    var max = Math.max.apply(null, values.concat([0]));
+    var bytes = new Uint8Array(Math.ceil((max + 1) / 8));
+    values.forEach(function (n) {
+      bytes[n >> 3] |= 1 << (n & 7);
+    });
+    var binary = "";
+    bytes.forEach(function (byte) {
+      binary += String.fromCharCode(byte);
+    });
+    return btoa(binary)
+      .replace(/\+/g, "-")
+      .replace(/\//g, "_")
+      .replace(/=+$/, "");
   }
 
-  function decodeB64Ids(b) {
+  function decodeSequence(encoded) {
     try {
-      var str = atob(decodeURIComponent(b));
-      return str
-        .split(",")
-        .map(function (s) { return parseInt(s, 10); })
-        .filter(function (n) { return !isNaN(n); });
+      var binary = atob(encoded.replace(/-/g, "+").replace(/_/g, "/"));
+      var values = [];
+      for (var byteIndex = 0; byteIndex < binary.length; byteIndex++) {
+        var byte = binary.charCodeAt(byteIndex);
+        for (var bit = 0; bit < 8; bit++) {
+          if (byte & (1 << bit)) values.push(byteIndex * 8 + bit);
+        }
+      }
+      return values;
     } catch (e) {
       return [];
     }
@@ -542,7 +568,7 @@
         var names = currentBlockers
           .map(function (id) { return byId[id] ? byId[id].name : null; })
           .filter(Boolean);
-        showToast("Conflicts with " + names.join(", ") + " — deselect it first");
+        showToast("Conflicts with " + names.join(", ") + " â€” deselect it first");
         return;
       }
       toggleSelection(entry.id);
