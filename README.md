@@ -10,16 +10,27 @@ I might create more tools related to Pressure, uncertain what it would be as of 
 # Project info
 ## Structure
 ```
-pressure
+├── [F] .gitignore
+├── [F] LICENSE
+├── [F] README.md
 ├── [D] css
 │   └── [F] style.css
 ├── [D] data
-│   ├── [D] v1
+│   ├── [D] v1_0
 │   │   ├── [F] 1-stars.json
 │   │   ├── [F] 2-stars.json
 │   │   ├── [F] 3-stars.json
 │   │   ├── [F] 4-stars.json
 │   │   ├── [F] conflict.json
+│   │   ├── [F] presets-sample.json
+│   │   └── [F] stars-map.json
+│   ├── [D] v1_1
+│   │   ├── [F] 1-stars.json
+│   │   ├── [F] 2-stars.json
+│   │   ├── [F] 3-stars.json
+│   │   ├── [F] 4-stars.json
+│   │   ├── [F] conflict.json
+│   │   ├── [F] presets-sample.json
 │   │   └── [F] stars-map.json
 │   └── [F] versions.json
 ├── [D] fonts
