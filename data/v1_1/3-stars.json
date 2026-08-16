@@ -1,0 +1,62 @@
+[ 
+  {
+    "Shallow Pockets": {
+      "desc": "Can only carry four unique items, any new ones will be dropped.",
+      "boost": 5
+    }
+  },
+  {
+    "You Only Have Two Hands": {
+      "desc": "Can only carry two unique items, any new ones will be dropped.",
+      "boost": 15
+    }
+  },
+  {
+    "I Always Come Back": {
+      "desc": "An immortal wall dweller will stalk you throughout the run, watch your back.",
+      "boost": 15
+    }
+  },
+  {
+    "Porous Walls": {
+      "desc": "Nodes, including Pandemonium, can see you through walls, not recommended with \"Pure Pandemonium\".",
+      "boost": 10
+    }
+  },
+  {
+    "Hot Potato": {
+      "desc": "An indicator and beeping will warn you to crouch, otherwise you will be killed.",
+      "boost": 10
+    }
+  },
+  {
+    "Landyours": {
+      "desc": "Watch your step, landmines are more common.",
+      "boost": 15
+    }
+  },
+  {
+    "Explosive Storage": {
+      "desc": "Drawers may contain landmines, step away as fast as possible.",
+      "boost": 10
+    }
+  },
+  {
+    "Subspace Tripmines": {
+      "desc": "Landmines are replaced by Subspace Tripmines, they are now much harder to see.",
+      "boost": 10
+    }
+  },
+  {
+    "Friendly": {
+      "desc": "A new Imaginary Friend spawns every 20 rooms, otherwise harmless.",
+      "boost": 5
+    }
+  },
+  {
+    "Deception": {
+      "desc": "Upon spawning, Pandemonium will mimic an Angler or its variants, functions like normal otherwise.",
+      "boost": 10
+    }
+  }
+]

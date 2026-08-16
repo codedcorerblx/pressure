@@ -2,8 +2,10 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta property="og:title" content="Pressure Modifiers Selector">
-<meta property="og:description" content="Welcome to what I called PMS, Pressure Modifiers Selector. Here you can share modifiers with other after selecting too!">
+<meta id="meta-description" name="description" content="Welcome to what I called PMS, Pressure Modifiers Selector. Here you can share modifiers with other after selecting too!">
+<meta id="og-title" property="og:title" content="Pressure Modifiers Selector">
+<meta id="og-description" property="og:description" content="Welcome to what I called PMS, Pressure Modifiers Selector. Here you can share modifiers with other after selecting too!">
+<meta id="twitter-description" name="twitter:description" content="Welcome to what I called PMS, Pressure Modifiers Selector. Here you can share modifiers with other after selecting too!">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Modifier Console</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,6 +27,14 @@
       <label class="version-select-wrap">
         <span class="version-select-label">Version</span>
         <select id="version-select" class="version-select" aria-label="Data version"></select>
+      </label>
+      <label class="version-select-wrap">
+        <span class="version-select-label">Preview</span>
+        <select id="og-format-select" class="version-select" aria-label="Permalink preview format">
+          <option value="none">None</option>
+          <option value="short">Short</option>
+          <option value="long">Long</option>
+        </select>
       </label>
       <button id="permalink-btn" class="btn btn-ghost" type="button">
         <span class="btn-icon">&#128279;</span> Copy Permalink
@@ -82,14 +92,59 @@
       </div>
       <div class="star-icons" id="star-icons"></div>
     </div>
+
+    <div class="copy-list-row">
+      <div class="pill-toggle" id="copy-list-format" role="group" aria-label="Copy list format">
+        <button type="button" class="pill-btn active" data-format="short">Short</button>
+        <button type="button" class="pill-btn" data-format="long">Long</button>
+      </div>
+      <button id="copy-list-btn" class="btn btn-ghost" type="button">
+        <span class="btn-icon">&#128203;</span> Copy List
+      </button>
+    </div>
   </aside>
 
 </main>
+
+<section class="panel presets-panel" aria-label="Presets and configs">
+  <div class="panel-head">
+    <span class="panel-head-label">// Presets &amp; Configs</span>
+    <div class="presets-panel-actions">
+      <button id="save-preset-btn" class="btn btn-ghost btn-small" type="button">
+        <span class="btn-icon">&#128190;</span> Save Current
+      </button>
+      <button id="export-config-btn" class="btn btn-ghost btn-small" type="button">
+        <span class="btn-icon">&#128228;</span> Export Config
+      </button>
+      <button id="import-config-btn" class="btn btn-ghost btn-small" type="button">
+        <span class="btn-icon">&#128229;</span> Import Config
+      </button>
+    </div>
+  </div>
+  <div id="presets-list" class="presets-list">
+    <p class="empty-state">No presets for this version yet.</p>
+  </div>
+</section>
 
 <div id="desc-popover" class="desc-popover" hidden>
   <div class="desc-popover-title" id="desc-popover-title"></div>
   <div class="desc-popover-label">Description</div>
   <div class="desc-popover-body" id="desc-popover-body"></div>
+</div>
+
+<div id="app-modal-backdrop" class="modal-backdrop" hidden>
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="app-modal-title">
+    <div class="modal-head">
+      <span class="modal-title" id="app-modal-title">Title</span>
+      <button id="app-modal-close" class="modal-close" type="button" aria-label="Close">&#10005;</button>
+    </div>
+    <div class="modal-body" id="app-modal-body">
+      <!-- populated by app.js per-mode -->
+    </div>
+    <div class="modal-actions" id="app-modal-actions">
+      <!-- populated by app.js per-mode -->
+    </div>
+  </div>
 </div>
 
 <div id="toast" class="toast" hidden></div>

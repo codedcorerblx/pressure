@@ -1,0 +1,56 @@
+[ 
+  {
+    "Chaos!": {
+      "desc": "Let RNG decide your fate, fakes polls from \"Streamer Polls\".",
+      "boost": 50
+    }
+  },
+  {
+    "Pure Pandemonium": {
+      "desc": "Safe spots are no longer enough, Pandemonium will replace any node spawn.",
+      "boost": 40
+    }
+  },
+  {
+    "3AM Challenge": {
+      "desc": "Witching Hour will follow you throughout the run, look at it to scare it off temporarily.",
+      "boost": 25
+    }
+  },
+  {
+    "Interloper": {
+      "desc": "Lopee will follow you throughout the run, instantly killing you if it reaches you.",
+      "boost": 25
+    }
+  },
+  {
+    "Not For Broadcast": {
+      "desc": "Upon entering the Ridge, loud music and a 4 minute and 43 second countdown start, and will only stop when all have hit the \"Voted To End this Madness\" button. If the timer reaches zero, you will be killed.",
+      "boost": 40
+    }
+  },
+  {
+    "Rat Race": {
+      "desc": "Upon opening the first door, you will be given 50 research, each step costs research, any research collected is shared across players, and is increased by 50%. Taking steps while having no research causes you to take damage.",
+      "boost": 30
+    }
+  },
+  {
+    "Noodle Legs": {
+      "desc": "Any damage taken, including from SPR-INTs, will cause you to ragdoll, may softlock you until death if caught in the wrong spot.",
+      "boost": 25
+    }
+  },
+  {
+    "Lock In": {
+      "desc": "Dying before door 50 nullifies the bonuses of all modifiers and reduces rewards by 75%.",
+      "boost": 10
+    }
+  },
+  {
+    "All Or Nothing": {
+      "desc": "Dying at all nullifies the bonuses of all modifiers and reduces rewards by 75%.",
+      "boost": 30
+    }
+  }
+]

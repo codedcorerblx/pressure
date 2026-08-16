@@ -547,6 +547,204 @@ body {
   text-shadow: 0 0 10px rgba(255,45,70,0.65);
 }
 
+
+/* ---------- Copy list row ---------- */
+.copy-list-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 18px 18px;
+  border-top: 1px solid var(--line);
+}
+
+.pill-toggle {
+  display: inline-flex;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.pill-btn {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  background: var(--panel-alt);
+  border: none;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.pill-btn + .pill-btn { border-left: 1px solid var(--line); }
+
+.pill-btn.active {
+  color: #fff;
+  background: var(--red-deep);
+}
+
+.btn-small { padding: 7px 10px; font-size: 11px; }
+
+/* ---------- Presets panel ---------- */
+.presets-panel { margin-top: 20px; }
+
+.presets-panel .panel-head { flex-wrap: wrap; gap: 10px; }
+
+.presets-panel-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+
+.presets-list { max-height: 360px; overflow-y: auto; }
+
+.preset-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--line-soft);
+  flex-wrap: wrap;
+}
+
+.preset-row:hover { background: rgba(255,45,70,0.035); }
+
+.preset-info { display: flex; flex-direction: column; gap: 3px; min-width: 160px; }
+
+.preset-name {
+  font-family: var(--font-display);
+  font-size: 13px;
+  color: var(--text);
+  letter-spacing: 0.02em;
+}
+
+.preset-meta {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.preset-tag {
+  display: inline-block;
+  padding: 1px 6px;
+  border-radius: 2px;
+  margin-right: 6px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+}
+
+.preset-tag.is-default { color: var(--red-glow); border-color: var(--red-deep); }
+
+.preset-actions { display: flex; gap: 6px; flex-wrap: wrap; }
+
+/* ---------- Modal ---------- */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(4,4,5,0.72);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 400;
+}
+
+/* The [hidden] attribute's default UA-stylesheet rule (display: none)
+   has lower specificity than the class rule above, so without this it
+   gets silently overridden and the modal shows (and stays showing,
+   even after closeModal() sets hidden = true) on every load. */
+.modal-backdrop[hidden] {
+  display: none;
+}
+
+.modal {
+  width: 100%;
+  max-width: 460px;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,45,70,0.08);
+}
+
+.modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(180deg, #17151a, #131216);
+}
+
+.modal-title {
+  font-family: var(--font-display);
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 4px;
+  line-height: 1;
+}
+
+.modal-close:hover { color: var(--red-glow); }
+
+.modal-body { padding: 18px; }
+
+.modal-field-label {
+  display: block;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+
+.modal-input,
+.modal-textarea {
+  width: 100%;
+  background: var(--panel-alt);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  padding: 10px 12px;
+  resize: vertical;
+  box-sizing: border-box;
+}
+
+.modal-input:focus-visible,
+.modal-textarea:focus-visible {
+  outline: 2px solid var(--red);
+  outline-offset: 1px;
+}
+
+.modal-textarea { min-height: 90px; font-family: monospace; word-break: break-all; }
+
+.modal-field + .modal-field { margin-top: 14px; }
+
+.modal-help {
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 8px;
+  line-height: 1.5;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 14px 18px;
+  border-top: 1px solid var(--line);
+}
+
 /* ---------- Description popover ---------- */
 .desc-popover {
   position: fixed;

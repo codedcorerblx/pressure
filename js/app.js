@@ -4,6 +4,7 @@
    then for the active version reads
      data/<version>/1-stars.json .. 4-stars.json + stars-map.json
      data/<version>/conflict.json (optional — mutually-exclusive mods)
+     data/<version>/presets.json  (optional — built-in preset configs)
    Assigns global sequential IDs to every modifier in array order
    (order is preserved exactly as written — boosts are NOT assumed
    to be sorted). Renders a selectable list, tracks totals, and
@@ -15,6 +16,16 @@
    IDs are only meaningful within the version they came from, which
    is why the version slug travels alongside the selection in every
    permalink and in local storage.
+
+   The URL stays clean (no ?b=/?cf=) during normal browsing. Params
+   only appear when: (a) the page was opened via a shared permalink, or
+   (b) the user clicks "Copy Permalink". Any further selection change
+   after that immediately clears the params again.
+
+   Users can also save/load/rename/delete their own presets (stored in
+   IndexedDB, separate from the browser's HTTP/page cache — see the
+   "presets" section below) and import/export a single preset as a
+   short text code via the Presets panel.
 
    Data is always fetched fresh (cache: "no-store", no localStorage
    caching of the JSON payload) so editing the JSON files and
@@ -30,6 +41,9 @@
   var VERSIONS_MANIFEST = DATA_DIR + "versions.json";
   var SELECTION_KEY_PREFIX = "mc_selection::"; // + version slug
   var LAST_VERSION_KEY = "mc_last_version";
+  var PRESETS_DB_NAME = "modifier_console_db";
+  var PRESETS_DB_VERSION = 1;
+  var PRESETS_STORE = "presets";
 
   /** @type {Array<{id:number,name:string,desc:string,boost:number,tier:string}>} */
   var registry = [];
@@ -42,12 +56,23 @@
   /** id -> Set of ids it mutually conflicts with, for the active version */
   var conflictMap = {};
 
+  /** built-in presets for the active version: Array<{name, mods:[names]}> */
+  var defaultPresets = [];
+  /** user-saved presets for the active version, loaded from IndexedDB:
+      Array<{id, name, versionSlug, mods:[names], createdAt, updatedAt}> */
+  var customPresets = [];
+
   var versionsManifest = { default: "", versions: [] };
   var currentVersion = "";
 
   var selected = new Set();
   var starMap = { zero: 0, one: 50, two: 150, three: 250, four: 350 };
   var currentTab = "all";
+  var copyListFormat = "short";
+
+  /** original (default) meta tag content, captured once at boot so we
+      can revert to it when no permalink preview is active */
+  var defaultMeta = { description: "", ogTitle: "", ogDescription: "", twitterDescription: "" };
 
   var els = {};
 
@@ -55,7 +80,9 @@
 
   function init() {
     cacheEls();
+    captureDefaultMeta();
     bindGlobalUI();
+    requestPersistentStorage();
 
     fetchJSON(VERSIONS_MANIFEST)
       .then(function (manifest) {
@@ -83,12 +110,44 @@
     els.starNextLabel = document.getElementById("star-next-label");
     els.tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
     els.versionSelect = document.getElementById("version-select");
+    els.ogFormatSelect = document.getElementById("og-format-select");
     els.permalinkBtn = document.getElementById("permalink-btn");
     els.resetBtn = document.getElementById("reset-btn");
     els.popover = document.getElementById("desc-popover");
     els.popoverTitle = document.getElementById("desc-popover-title");
     els.popoverBody = document.getElementById("desc-popover-body");
     els.toast = document.getElementById("toast");
+
+    els.copyListBtn = document.getElementById("copy-list-btn");
+    els.copyListFormatWrap = document.getElementById("copy-list-format");
+    els.copyListFormatBtns = els.copyListFormatWrap
+      ? Array.prototype.slice.call(els.copyListFormatWrap.querySelectorAll(".pill-btn"))
+      : [];
+
+    els.presetsList = document.getElementById("presets-list");
+    els.savePresetBtn = document.getElementById("save-preset-btn");
+    els.exportConfigBtn = document.getElementById("export-config-btn");
+    els.importConfigBtn = document.getElementById("import-config-btn");
+
+    els.modalBackdrop = document.getElementById("app-modal-backdrop");
+    els.modalTitle = document.getElementById("app-modal-title");
+    els.modalBody = document.getElementById("app-modal-body");
+    els.modalActions = document.getElementById("app-modal-actions");
+    els.modalClose = document.getElementById("app-modal-close");
+
+    els.metaDescription = document.getElementById("meta-description");
+    els.metaOgTitle = document.getElementById("og-title");
+    els.metaOgDescription = document.getElementById("og-description");
+    els.metaTwitterDescription = document.getElementById("twitter-description");
+  }
+
+  function captureDefaultMeta() {
+    defaultMeta.description = els.metaDescription ? els.metaDescription.getAttribute("content") || "" : "";
+    defaultMeta.ogTitle = els.metaOgTitle ? els.metaOgTitle.getAttribute("content") || "" : "";
+    defaultMeta.ogDescription = els.metaOgDescription ? els.metaOgDescription.getAttribute("content") || "" : "";
+    defaultMeta.twitterDescription = els.metaTwitterDescription
+      ? els.metaTwitterDescription.getAttribute("content") || ""
+      : "";
   }
 
   function bindGlobalUI() {
@@ -106,11 +165,35 @@
     els.versionSelect.addEventListener("change", function () {
       var slug = els.versionSelect.value;
       if (slug === currentVersion) return;
+      clearURLParams();
       switchToVersion(slug, { fromURL: false, clearSelection: true });
     });
 
     els.permalinkBtn.addEventListener("click", copyPermalink);
     els.resetBtn.addEventListener("click", resetAll);
+
+    if (els.copyListFormatBtns.length) {
+      els.copyListFormatBtns.forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          copyListFormat = btn.getAttribute("data-format");
+          els.copyListFormatBtns.forEach(function (b) {
+            b.classList.toggle("active", b === btn);
+          });
+        });
+      });
+    }
+    if (els.copyListBtn) els.copyListBtn.addEventListener("click", copyListAsText);
+
+    if (els.savePresetBtn) els.savePresetBtn.addEventListener("click", handleSaveCurrentAsPreset);
+    if (els.exportConfigBtn) els.exportConfigBtn.addEventListener("click", handleExportCurrentSelection);
+    if (els.importConfigBtn) els.importConfigBtn.addEventListener("click", openImportModal);
+
+    if (els.modalClose) els.modalClose.addEventListener("click", closeModal);
+    if (els.modalBackdrop) {
+      els.modalBackdrop.addEventListener("click", function (e) {
+        if (e.target === els.modalBackdrop) closeModal();
+      });
+    }
 
     document.addEventListener("click", function (e) {
       if (
@@ -122,7 +205,10 @@
       }
     });
     document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") els.popover.hidden = true;
+      if (e.key === "Escape") {
+        els.popover.hidden = true;
+        closeModal();
+      }
     });
   }
 
@@ -209,6 +295,7 @@
         persistSelection();
         renderList();
         renderSummary();
+        return loadPresetsForVersion(slug);
       });
   }
 
@@ -377,6 +464,616 @@
     return blockers;
   }
 
+  /* ---------------- presets: built-in (presets.json) + user (IndexedDB) ---------------- */
+
+  // data/<version>/presets.json is optional:
+  //   { "presets": [ { "name": "Speedrun", "mods": ["Mod A", "Mod B"] } ] }
+  function normalizeDefaultPresets(raw) {
+    var list = Array.isArray(raw && raw.presets) ? raw.presets : [];
+    return list
+      .filter(function (p) {
+        return p && typeof p.name === "string" && p.name.length && Array.isArray(p.mods);
+      })
+      .map(function (p) {
+        return { name: p.name, mods: p.mods.filter(function (m) { return typeof m === "string"; }) };
+      });
+  }
+
+  // Resolves a preset's stored modifier names to ids in the *current*
+  // registry. Names not found in the current version are silently
+  // skipped (e.g. a modifier that's since been removed).
+  function resolvePresetIds(modNames) {
+    var ids = [];
+    (modNames || []).forEach(function (name) {
+      var entry = registry.filter(function (e) { return e.name === name; })[0];
+      if (entry) ids.push(entry.id);
+    });
+    return ids;
+  }
+
+  function loadPresetsForVersion(slug) {
+    var dir = DATA_DIR + encodeURIComponent(slug) + "/";
+    return Promise.all([fetchJSONOptional(dir + "presets.json"), dbGetAllPresets()]).then(
+      function (results) {
+        defaultPresets = normalizeDefaultPresets(results[0]);
+        var allCustom = Array.isArray(results[1]) ? results[1] : [];
+        customPresets = allCustom.filter(function (p) {
+          return p && p.versionSlug === slug;
+        });
+        renderPresets();
+      }
+    );
+  }
+
+  // --- IndexedDB wrapper for user-saved presets ---
+  // Chosen over localStorage because it's what browsers' "clear cache"
+  // / "clear cookies" quick-actions target less consistently than the
+  // page cache — nothing client-side is bulletproof against a
+  // deliberate "clear all site data", though, which is what Export
+  // (a portable text code) is for.
+  var presetsDbPromise = null;
+
+  function openPresetsDB() {
+    if (presetsDbPromise) return presetsDbPromise;
+    presetsDbPromise = new Promise(function (resolve, reject) {
+      if (!window.indexedDB) {
+        reject(new Error("IndexedDB unsupported"));
+        return;
+      }
+      var req = indexedDB.open(PRESETS_DB_NAME, PRESETS_DB_VERSION);
+      req.onupgradeneeded = function (e) {
+        var db = e.target.result;
+        if (!db.objectStoreNames.contains(PRESETS_STORE)) {
+          db.createObjectStore(PRESETS_STORE, { keyPath: "id" });
+        }
+      };
+      req.onsuccess = function (e) { resolve(e.target.result); };
+      req.onerror = function (e) { reject(e.target.error); };
+    });
+    return presetsDbPromise;
+  }
+
+  function dbGetAllPresets() {
+    return openPresetsDB()
+      .then(function (db) {
+        return new Promise(function (resolve, reject) {
+          var tx = db.transaction(PRESETS_STORE, "readonly");
+          var req = tx.objectStore(PRESETS_STORE).getAll();
+          req.onsuccess = function () { resolve(req.result || []); };
+          req.onerror = function () { reject(req.error); };
+        });
+      })
+      .catch(function () { return []; }); // IndexedDB unavailable — degrade gracefully
+  }
+
+  function dbPutPreset(record) {
+    return openPresetsDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(PRESETS_STORE, "readwrite");
+        tx.objectStore(PRESETS_STORE).put(record);
+        tx.oncomplete = function () { resolve(record); };
+        tx.onerror = function () { reject(tx.error); };
+      });
+    });
+  }
+
+  function dbDeletePreset(id) {
+    return openPresetsDB().then(function (db) {
+      return new Promise(function (resolve, reject) {
+        var tx = db.transaction(PRESETS_STORE, "readwrite");
+        tx.objectStore(PRESETS_STORE).delete(id);
+        tx.oncomplete = function () { resolve(); };
+        tx.onerror = function () { reject(tx.error); };
+      });
+    });
+  }
+
+  function requestPersistentStorage() {
+    if (navigator.storage && navigator.storage.persist) {
+      navigator.storage.persist().catch(function () { /* best effort */ });
+    }
+  }
+
+  function generatePresetId() {
+    return "p_" + Date.now().toString(36) + "_" + Math.random().toString(36).slice(2, 8);
+  }
+
+  function renderPresets() {
+    if (!els.presetsList) return;
+    var combined = defaultPresets
+      .map(function (p) { return { source: "default", name: p.name, mods: p.mods }; })
+      .concat(
+        customPresets.map(function (p) {
+          return { source: "custom", id: p.id, name: p.name, mods: p.mods };
+        })
+      );
+
+    els.presetsList.innerHTML = "";
+    if (!combined.length) {
+      var empty = document.createElement("p");
+      empty.className = "empty-state";
+      empty.textContent = "No presets for this version yet.";
+      els.presetsList.appendChild(empty);
+      return;
+    }
+    combined.forEach(function (preset) {
+      els.presetsList.appendChild(buildPresetRow(preset));
+    });
+  }
+
+  function buildPresetRow(preset) {
+    var row = document.createElement("div");
+    row.className = "preset-row";
+
+    var info = document.createElement("div");
+    info.className = "preset-info";
+    var name = document.createElement("div");
+    name.className = "preset-name";
+    name.textContent = preset.name;
+    var meta = document.createElement("div");
+    meta.className = "preset-meta";
+    var tag = document.createElement("span");
+    tag.className = "preset-tag" + (preset.source === "default" ? " is-default" : "");
+    tag.textContent = preset.source === "default" ? "Default" : "Custom";
+    meta.appendChild(tag);
+    meta.appendChild(document.createTextNode((preset.mods || []).length + " mods"));
+    info.appendChild(name);
+    info.appendChild(meta);
+
+    var actions = document.createElement("div");
+    actions.className = "preset-actions";
+
+    var loadBtn = document.createElement("button");
+    loadBtn.type = "button";
+    loadBtn.className = "btn btn-ghost btn-small";
+    loadBtn.textContent = "Load";
+    loadBtn.addEventListener("click", function () { loadPreset(preset); });
+    actions.appendChild(loadBtn);
+
+    var exportBtn = document.createElement("button");
+    exportBtn.type = "button";
+    exportBtn.className = "btn btn-ghost btn-small";
+    exportBtn.textContent = "Export";
+    exportBtn.addEventListener("click", function () {
+      var ids = resolvePresetIds(preset.mods);
+      if (!ids.length) {
+        showToast("Nothing to export — no matching modifiers");
+        return;
+      }
+      openExportModal(preset.name, buildConfigCode(preset.name, currentVersion, ids));
+    });
+    actions.appendChild(exportBtn);
+
+    if (preset.source === "custom") {
+      var renameBtn = document.createElement("button");
+      renameBtn.type = "button";
+      renameBtn.className = "btn btn-ghost btn-small";
+      renameBtn.textContent = "Rename";
+      renameBtn.addEventListener("click", function () {
+        openNameModal("Rename Preset", preset.name, function (newName) {
+          var record = customPresets.filter(function (p) { return p.id === preset.id; })[0];
+          if (!record) return;
+          record.name = newName;
+          record.updatedAt = Date.now();
+          dbPutPreset(record).then(function () {
+            renderPresets();
+            showToast("Preset renamed");
+          });
+        });
+      });
+      actions.appendChild(renameBtn);
+
+      var deleteBtn = document.createElement("button");
+      deleteBtn.type = "button";
+      deleteBtn.className = "btn btn-ghost btn-small btn-danger";
+      deleteBtn.textContent = "Delete";
+      deleteBtn.addEventListener("click", function () {
+        if (!window.confirm('Delete preset "' + preset.name + '"? This cannot be undone.')) return;
+        dbDeletePreset(preset.id).then(function () {
+          customPresets = customPresets.filter(function (p) { return p.id !== preset.id; });
+          renderPresets();
+          showToast("Preset deleted");
+        });
+      });
+      actions.appendChild(deleteBtn);
+    }
+
+    row.appendChild(info);
+    row.appendChild(actions);
+    return row;
+  }
+
+  function loadPreset(preset) {
+    var ids = resolvePresetIds(preset.mods);
+    if (!ids.length) {
+      showToast("No matching modifiers in this version");
+      return;
+    }
+    selected = new Set(ids);
+    persistSelection();
+    clearURLParams();
+    renderList();
+    renderSummary();
+    showToast('Loaded "' + preset.name + '"');
+  }
+
+  function handleSaveCurrentAsPreset() {
+    if (!selected.size) {
+      showToast("Nothing selected to save");
+      return;
+    }
+    openNameModal("Save Preset", "", function (name) {
+      var mods = Array.from(selected)
+        .map(function (id) { return byId[id] ? byId[id].name : null; })
+        .filter(Boolean);
+      var record = {
+        id: generatePresetId(),
+        name: name,
+        versionSlug: currentVersion,
+        mods: mods,
+        createdAt: Date.now()
+      };
+      dbPutPreset(record)
+        .then(function () {
+          customPresets.push(record);
+          renderPresets();
+          showToast('Preset "' + name + '" saved');
+        })
+        .catch(function () {
+          showToast("Couldn't save preset — storage unavailable");
+        });
+    });
+  }
+
+  function handleExportCurrentSelection() {
+    if (!selected.size) {
+      showToast("Nothing selected to export");
+      return;
+    }
+    openNameModal("Export Config", "", function (name) {
+      var ids = Array.from(selected);
+      openExportModal(name, buildConfigCode(name, currentVersion, ids));
+    });
+  }
+
+  /* ---------------- import/export config codes ---------------- */
+
+  // Format: <base64url(name)>.<base64url(version slug)>:<bitset code>
+  // "." and ":" never appear inside base64url output, so this splits
+  // unambiguously even though the name/slug/code segments themselves
+  // can (and often will) contain "-" and "_".
+  function utf8ToB64Url(str) {
+    var bytes = new TextEncoder().encode(str);
+    var binary = "";
+    bytes.forEach(function (b) { binary += String.fromCharCode(b); });
+    return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  }
+
+  function b64UrlToUtf8(b64) {
+    var binary = atob(b64.replace(/-/g, "+").replace(/_/g, "/"));
+    var bytes = new Uint8Array(binary.length);
+    for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+
+  function buildConfigCode(name, slug, ids) {
+    var sortedIds = ids.slice().sort(function (a, b) { return a - b; });
+    return utf8ToB64Url(name) + "." + utf8ToB64Url(slug) + ":" + encodeSequence(sortedIds);
+  }
+
+  function parseConfigCode(code) {
+    var colonIdx = code.indexOf(":");
+    if (colonIdx === -1) return null;
+    var header = code.slice(0, colonIdx);
+    var idsPart = code.slice(colonIdx + 1);
+    var dotIdx = header.indexOf(".");
+    if (dotIdx === -1) return null;
+    try {
+      var name = b64UrlToUtf8(header.slice(0, dotIdx));
+      var slug = b64UrlToUtf8(header.slice(dotIdx + 1));
+      if (!name || !slug) return null;
+      return { name: name, slug: slug, ids: decodeSequence(idsPart) };
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function openImportModal() {
+    openModal("Import Config", function (body, actions, close) {
+      var field = document.createElement("div");
+      field.className = "modal-field";
+      var label = document.createElement("label");
+      label.className = "modal-field-label";
+      label.textContent = "Paste config code";
+      var ta = document.createElement("textarea");
+      ta.className = "modal-textarea";
+      ta.placeholder = "name.version:code";
+      field.appendChild(label);
+      field.appendChild(ta);
+
+      var help = document.createElement("div");
+      help.className = "modal-help";
+      help.textContent =
+        "Switches to the matching version if needed, applies the selection, and saves it as a new preset.";
+
+      body.appendChild(field);
+      body.appendChild(help);
+
+      var cancelBtn = document.createElement("button");
+      cancelBtn.type = "button";
+      cancelBtn.className = "btn btn-ghost";
+      cancelBtn.textContent = "Cancel";
+      cancelBtn.addEventListener("click", close);
+
+      var importBtn = document.createElement("button");
+      importBtn.type = "button";
+      importBtn.className = "btn btn-ghost";
+      importBtn.textContent = "Import";
+      importBtn.addEventListener("click", function () {
+        var raw = ta.value.trim();
+        if (!raw) return;
+        close();
+        applyImportedConfig(raw);
+      });
+
+      actions.appendChild(cancelBtn);
+      actions.appendChild(importBtn);
+      setTimeout(function () { ta.focus(); }, 0);
+    });
+  }
+
+  function applyImportedConfig(raw) {
+    var parsed = parseConfigCode(raw);
+    if (!parsed) {
+      showToast("Invalid config code");
+      return;
+    }
+    if (!versionExists(parsed.slug)) {
+      showToast('Unknown version in code: "' + parsed.slug + '"');
+      return;
+    }
+
+    var proceed = function () {
+      var validIds = parsed.ids.filter(function (id) { return !!byId[id]; });
+      if (!validIds.length) {
+        showToast("Config code matched no modifiers in this version");
+        return;
+      }
+      selected = new Set(validIds);
+      persistSelection();
+      clearURLParams();
+      renderList();
+      renderSummary();
+
+      var modNames = validIds.map(function (id) { return byId[id].name; });
+      var record = {
+        id: generatePresetId(),
+        name: parsed.name,
+        versionSlug: currentVersion,
+        mods: modNames,
+        createdAt: Date.now()
+      };
+      dbPutPreset(record)
+        .then(function () {
+          customPresets.push(record);
+          renderPresets();
+          showToast('Imported "' + parsed.name + '" and saved as a preset');
+        })
+        .catch(function () {
+          showToast('Imported "' + parsed.name + '" (preset save failed)');
+        });
+    };
+
+    if (parsed.slug !== currentVersion) {
+      switchToVersion(parsed.slug, { fromURL: false, clearSelection: true }).then(proceed);
+    } else {
+      proceed();
+    }
+  }
+
+  /* ---------------- generic modal (save/rename/export/import) ---------------- */
+
+  function openModal(title, renderFn) {
+    if (!els.modalBackdrop) return;
+    els.modalTitle.textContent = title;
+    els.modalBody.innerHTML = "";
+    els.modalActions.innerHTML = "";
+    renderFn(els.modalBody, els.modalActions, closeModal);
+    els.modalBackdrop.hidden = false;
+  }
+
+  function closeModal() {
+    if (els.modalBackdrop) els.modalBackdrop.hidden = true;
+  }
+
+  function openNameModal(title, initialValue, onConfirm) {
+    openModal(title, function (body, actions, close) {
+      var field = document.createElement("div");
+      field.className = "modal-field";
+      var label = document.createElement("label");
+      label.className = "modal-field-label";
+      label.textContent = "Name";
+      var input = document.createElement("input");
+      input.type = "text";
+      input.className = "modal-input";
+      input.maxLength = 60;
+      input.value = initialValue || "";
+      field.appendChild(label);
+      field.appendChild(input);
+      body.appendChild(field);
+
+      var cancelBtn = document.createElement("button");
+      cancelBtn.type = "button";
+      cancelBtn.className = "btn btn-ghost";
+      cancelBtn.textContent = "Cancel";
+      cancelBtn.addEventListener("click", close);
+
+      var confirmBtn = document.createElement("button");
+      confirmBtn.type = "button";
+      confirmBtn.className = "btn btn-ghost";
+      confirmBtn.textContent = "Save";
+      var submit = function () {
+        var val = input.value.trim();
+        if (!val) {
+          input.focus();
+          return;
+        }
+        close();
+        onConfirm(val);
+      };
+      confirmBtn.addEventListener("click", submit);
+      input.addEventListener("keydown", function (e) {
+        if (e.key === "Enter") submit();
+      });
+
+      actions.appendChild(cancelBtn);
+      actions.appendChild(confirmBtn);
+      setTimeout(function () { input.focus(); input.select(); }, 0);
+    });
+  }
+
+  function openExportModal(name, code) {
+    openModal("Export Config", function (body, actions, close) {
+      var field = document.createElement("div");
+      field.className = "modal-field";
+      var label = document.createElement("label");
+      label.className = "modal-field-label";
+      label.textContent = 'Config code for "' + name + '"';
+      var ta = document.createElement("textarea");
+      ta.className = "modal-textarea";
+      ta.readOnly = true;
+      ta.value = code;
+      field.appendChild(label);
+      field.appendChild(ta);
+
+      var help = document.createElement("div");
+      help.className = "modal-help";
+      help.textContent = "Share this code — anyone can paste it into Import Config to load these exact mods.";
+
+      body.appendChild(field);
+      body.appendChild(help);
+
+      var closeBtn = document.createElement("button");
+      closeBtn.type = "button";
+      closeBtn.className = "btn btn-ghost";
+      closeBtn.textContent = "Close";
+      closeBtn.addEventListener("click", close);
+
+      var copyBtn = document.createElement("button");
+      copyBtn.type = "button";
+      copyBtn.className = "btn btn-ghost";
+      copyBtn.textContent = "Copy Code";
+      copyBtn.addEventListener("click", function () {
+        ta.focus();
+        ta.select();
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard
+            .writeText(code)
+            .then(function () { showToast("Code copied"); })
+            .catch(function () { showToast("Copy failed — select & copy manually"); });
+        } else {
+          showToast("Select & copy manually");
+        }
+      });
+
+      actions.appendChild(closeBtn);
+      actions.appendChild(copyBtn);
+      setTimeout(function () { ta.focus(); ta.select(); }, 0);
+    });
+  }
+
+  /* ---------------- shareable mod-list text (Copy List + permalink preview) ---------------- */
+
+  function selectedEntriesSorted() {
+    return Array.from(selected)
+      .map(function (id) { return byId[id]; })
+      .filter(Boolean)
+      .sort(function (a, b) { return a.id - b.id; });
+  }
+
+  // "1 Star(s) Modifier\n\n* Mod — boost%\n...\n\n2 Star(s) Modifier\n..."
+  // Tiers with nothing selected are skipped entirely.
+  function buildLongList() {
+    var entries = selectedEntriesSorted();
+    var lines = [];
+    TIER_FILES.forEach(function (tier) {
+      var tierEntries = entries.filter(function (e) { return e.tier === tier; });
+      if (!tierEntries.length) return;
+      lines.push(tier + " Star(s) Modifier");
+      lines.push("");
+      tierEntries.forEach(function (e) {
+        lines.push("* " + e.name + " \u2014 " + e.boost + "%");
+      });
+      lines.push("");
+    });
+    while (lines.length && lines[lines.length - 1] === "") lines.pop();
+    return lines.join("\n");
+  }
+
+  // "mod; mod; mod" — no trailing separator.
+  function buildShortList() {
+    return selectedEntriesSorted().map(function (e) { return e.name; }).join("; ");
+  }
+
+  function currentStarCount(totalBoost) {
+    var bands = [
+      { n: 0, val: Number(starMap.zero) || 0 },
+      { n: 1, val: Number(starMap.one) || 0 },
+      { n: 2, val: Number(starMap.two) || 0 },
+      { n: 3, val: Number(starMap.three) || 0 },
+      { n: 4, val: Number(starMap.four) || 0 }
+    ];
+    var current = bands[0];
+    bands.forEach(function (b) { if (totalBoost >= b.val) current = b; });
+    return current.n;
+  }
+
+  function buildSummaryLine() {
+    var entries = selectedEntriesSorted();
+    var totalBoost = entries.reduce(function (sum, e) { return sum + e.boost; }, 0);
+    return "Mods: " + entries.length + " || Percentage: " + totalBoost + "% = " + currentStarCount(totalBoost) + " star(s)";
+  }
+
+  // Copy List never includes the "// Summary" line — only the OG
+  // permalink preview does.
+  function copyListAsText() {
+    if (!selected.size) {
+      showToast("No modifiers selected");
+      return;
+    }
+    var text = copyListFormat === "long" ? buildLongList() : buildShortList();
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard
+        .writeText(text)
+        .then(function () { showToast("List copied"); })
+        .catch(function () { showToast("Copy failed"); });
+    } else {
+      showToast("Copy failed — clipboard unavailable");
+    }
+  }
+
+  /* ---------------- permalink preview meta tags (local tab only — see README) ---------------- */
+
+  function setMetaContent(el, content) {
+    if (el) el.setAttribute("content", content);
+  }
+
+  function applyOgFormat(format) {
+    if (format === "none" || !selected.size) {
+      setMetaContent(els.metaDescription, defaultMeta.description);
+      setMetaContent(els.metaOgDescription, defaultMeta.ogDescription);
+      setMetaContent(els.metaTwitterDescription, defaultMeta.twitterDescription);
+      return;
+    }
+    var desc =
+      format === "long"
+        ? buildLongList() + "\n\n// Summary\n" + buildSummaryLine()
+        : buildShortList() + "\n\n" + buildSummaryLine();
+    setMetaContent(els.metaDescription, desc);
+    setMetaContent(els.metaOgDescription, desc);
+    setMetaContent(els.metaTwitterDescription, desc);
+  }
+
   /* ---------------- selection state (namespaced per version) ---------------- */
 
   function hydrateSelectionFromURLOrCache(slug) {
@@ -417,10 +1114,14 @@
     } catch (e) {
       /* ignore */
     }
-    updateURL();
+    // Note: the URL is NOT touched here. Only "Copy Permalink" writes
+    // ?b=/?cf= to the address bar; every other selection change keeps
+    // the URL clean (see clearURLParams()).
   }
 
-  function updateURL() {
+  // Writes the current selection + version into the address bar as a
+  // permalink. Only called explicitly from the Copy Permalink button.
+  function setPermalinkURL() {
     var url = new URL(window.location.href);
     url.searchParams.set("cf", currentVersion);
     if (selected.size) {
@@ -430,6 +1131,21 @@
       url.searchParams.delete("b");
     }
     window.history.replaceState({}, "", url.toString());
+  }
+
+  // Strips ?b=/?cf= from the address bar and reverts any permalink
+  // preview meta tags back to their defaults. Called whenever the live
+  // selection/version diverges from whatever permalink might currently
+  // be shown in the URL, so the bar only ever shows params that
+  // accurately describe what's on screen.
+  function clearURLParams() {
+    var url = new URL(window.location.href);
+    if (url.searchParams.has("b") || url.searchParams.has("cf")) {
+      url.searchParams.delete("b");
+      url.searchParams.delete("cf");
+      window.history.replaceState({}, "", url.toString());
+    }
+    applyOgFormat("none");
   }
 
   // Bitset encoding: one bit per possible modifier id (bit n set = id n
@@ -479,6 +1195,7 @@
       selected.add(id);
     }
     persistSelection();
+    clearURLParams();
     renderList();
     renderSummary();
   }
@@ -486,6 +1203,7 @@
   function resetAll() {
     selected = new Set();
     persistSelection();
+    clearURLParams();
     renderList();
     renderSummary();
     els.popover.hidden = true;
@@ -706,7 +1424,8 @@
   /* ---------------- permalink + misc UI ---------------- */
 
   function copyPermalink() {
-    updateURL();
+    setPermalinkURL();
+    applyOgFormat(els.ogFormatSelect ? els.ogFormatSelect.value : "none");
     var url = window.location.href;
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard
