@@ -18,6 +18,12 @@
     }
   },
   {
+    "Use When Found": {
+      "desc": "You cannot carry more than one battery or NeoStyk.",
+      "boost": 5
+    }
+  },
+  {
     "I Always Come Back": {
       "desc": "An immortal wall dweller will stalk you throughout the run, watch your back.",
       "boost": 15
