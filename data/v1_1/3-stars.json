@@ -1,5 +1,11 @@
 [ 
   {
+    "Anyway, $4 A Pound": {
+      "desc": "Add Cement Shoe to roster, works like weeping angel.",
+      "boost": 15
+    }
+  },
+  {
     "Shallow Pockets": {
       "desc": "Can only carry four unique items, any new ones will be dropped.",
       "boost": 5
@@ -56,6 +62,12 @@
   {
     "Deception": {
       "desc": "Upon spawning, Pandemonium will mimic an Angler or its variants, functions like normal otherwise.",
+      "boost": 10
+    }
+  },
+  {
+    "Realistic Horror Game Health": {
+      "desc": "Must stay at max health, else decreases over time. Not compatible with \"Noodle Legs\"",
       "boost": 10
     }
   }
