@@ -6,9 +6,9 @@
     }
   },
   {
-    "Pure Pandemonium": {
+    "[TEMPORARILY REMOVED]": {
       "desc": "Safe spots are no longer enough, Pandemonium will replace any node spawn.",
-      "boost": 40
+      "boost": -9999999999
     }
   },
   {
