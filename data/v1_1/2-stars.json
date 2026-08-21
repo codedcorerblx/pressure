@@ -118,5 +118,11 @@
       "desc": "Your vision is reduced, thick fog surrounds you.",
       "boost": 10
     }
+  },
+  {
+    "Wifey!": {
+      "desc": "\"My Wife\" follows you around the entire run, harmless.",
+      "boost": 1
+    }
   }
 ]
