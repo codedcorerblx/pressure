@@ -31,7 +31,7 @@
   },
   {
     "Sneak Attack": {
-      "desc": "Nodes, including pandemonium, can spawn from the front.",
+      "desc": "Nodes can spawn from the front.",
       "boost": 10
     }
   },
