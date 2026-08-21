@@ -1,0 +1,11 @@
+{
+  "default": "bloxy-red",
+  "themes": [
+    { "slug": "bloxy-red", "label": "Bloxy Red (Default)" },
+    { "slug": "classical-gray", "label": "Classical Gray" },
+    { "slug": "deep-sea-blue", "label": "Deep Sea Blue" },
+    { "slug": "focus-light", "label": "Focus Light" },
+    { "slug": "eclipse-orange", "label": "Eclipse Orange" },
+    { "slug": "programmer-green", "label": "Programmer Green" }
+  ]
+}

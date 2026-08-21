@@ -24,11 +24,98 @@
   --red-deep: #6e0f1d;
   --red-dim: #3a1219;
   --red-glow: #ff5c73;
+  --accent-rgb: 255, 45, 70;
   --text: #eae6e6;
   --muted: #8b8489;
   --muted-dim: #5c565a;
   --font-display: "Zekton", "Chakra Petch", sans-serif;
   --font-body: "Chakra Petch", sans-serif;
+}
+
+/* ---------- Themes ----------
+   Bloxy Red is the default (:root above). Every other theme overrides
+   the same variable set via [data-theme="..."] on <html>, set by
+   js/app.js from the saved choice (and by a tiny inline boot script in
+   <head> before first paint, to avoid a flash of the wrong theme). */
+
+[data-theme="classical-gray"] {
+  --bg: #0b0b0c;
+  --panel: #161616;
+  --panel-alt: #1e1e1e;
+  --line: #2e2e2e;
+  --line-soft: #232323;
+  --red: #c9c9c9;
+  --red-deep: #545454;
+  --red-dim: #303030;
+  --red-glow: #f0f0f0;
+  --accent-rgb: 201, 201, 201;
+  --text: #e8e8e8;
+  --muted: #8f8f8f;
+  --muted-dim: #5c5c5c;
+}
+
+[data-theme="deep-sea-blue"] {
+  --bg: #060b12;
+  --panel: #0e1620;
+  --panel-alt: #132030;
+  --line: #1f3346;
+  --line-soft: #182838;
+  --red: #2fb6ff;
+  --red-deep: #0a3f66;
+  --red-dim: #0d2436;
+  --red-glow: #6fd4ff;
+  --accent-rgb: 47, 182, 255;
+  --text: #e3f1fb;
+  --muted: #7fa3bd;
+  --muted-dim: #4d6b80;
+}
+
+[data-theme="focus-light"] {
+  --bg: #f5f5f2;
+  --panel: #ffffff;
+  --panel-alt: #eef0ee;
+  --line: #d8d8d4;
+  --line-soft: #e4e4e0;
+  --red: #b3211a;
+  --red-deep: #7a140f;
+  --red-dim: #f1d9d7;
+  --red-glow: #d1372c;
+  --accent-rgb: 179, 33, 26;
+  --text: #1c1c1c;
+  --muted: #63625d;
+  --muted-dim: #9a9992;
+}
+
+[data-theme="eclipse-orange"] {
+  --bg: #0c0a08;
+  --panel: #171310;
+  --panel-alt: #1f1912;
+  --line: #332619;
+  --line-soft: #291f15;
+  --red: #ff8a2b;
+  --red-deep: #7a3d0c;
+  --red-dim: #3a2410;
+  --red-glow: #ffb066;
+  --accent-rgb: 255, 138, 43;
+  --text: #f0e6da;
+  --muted: #a08b6f;
+  --muted-dim: #6b5b46;
+}
+
+[data-theme="programmer-green"] {
+  --bg: #050805;
+  --panel: #0c120c;
+  --panel-alt: #111a11;
+  --line: #1e2e1e;
+  --line-soft: #182418;
+  --red: #39ff6a;
+  --red-deep: #0f5c26;
+  --red-dim: #0e2414;
+  --red-glow: #7dffa0;
+  --accent-rgb: 57, 255, 106;
+  --text: #d8ffe0;
+  --muted: #5f9e6f;
+  --muted-dim: #3b6647;
 }
 
 * {
@@ -69,8 +156,8 @@ select:focus-visible,
 
 body {
   background-image:
-    radial-gradient(ellipse at top, rgba(110, 15, 29, 0.18), transparent 55%),
-    linear-gradient(180deg, #0a0a0c, #0d0c0f 40%, #0a0a0c);
+    radial-gradient(ellipse at top, rgba(var(--accent-rgb), 0.12), transparent 55%),
+    linear-gradient(180deg, var(--bg), var(--bg) 40%, var(--bg));
   position: relative;
 }
 
@@ -122,7 +209,7 @@ body {
 .brand-mark {
   color: var(--red);
   font-size: 18px;
-  text-shadow: 0 0 12px rgba(255,45,70,0.6);
+  text-shadow: 0 0 12px rgba(var(--accent-rgb), 0.6);
 }
 
 .brand-title {
@@ -157,7 +244,7 @@ body {
   transition: border-color 0.15s ease, color 0.15s ease, box-shadow 0.15s ease;
 }
 
-.btn:hover { border-color: var(--red); color: #fff; box-shadow: 0 0 0 1px rgba(255,45,70,0.25) inset; }
+.btn:hover { border-color: var(--red); color: #fff; box-shadow: 0 0 0 1px rgba(var(--accent-rgb), 0.25) inset; }
 .btn-icon { font-size: 12px; opacity: 0.85; }
 .btn-danger:hover { border-color: var(--red-deep); }
 
@@ -320,8 +407,8 @@ body {
   transition: background 0.12s ease;
 }
 
-.mod-row:hover { background: rgba(255,45,70,0.045); }
-.mod-row.is-selected { background: rgba(255,45,70,0.09); }
+.mod-row:hover { background: rgba(var(--accent-rgb), 0.045); }
+.mod-row.is-selected { background: rgba(var(--accent-rgb), 0.09); }
 
 .mod-row.is-disabled {
   background: rgba(139,132,137,0.08);
@@ -365,7 +452,7 @@ body {
 .mod-row.is-selected .mod-queue-box {
   border-color: var(--red);
   background: var(--red-deep);
-  box-shadow: 0 0 8px rgba(255,45,70,0.55);
+  box-shadow: 0 0 8px rgba(var(--accent-rgb), 0.55);
 }
 
 .mod-row.is-selected .mod-queue-box::after {
@@ -471,7 +558,7 @@ body {
   font-family: var(--font-display);
   font-size: 26px;
   color: var(--red-glow);
-  text-shadow: 0 0 14px rgba(255,45,70,0.45);
+  text-shadow: 0 0 14px rgba(var(--accent-rgb), 0.45);
 }
 
 /* ---------- Star gauge (signature element) ---------- */
@@ -511,7 +598,7 @@ body {
   top: 0; left: 0; bottom: 0;
   width: 0%;
   background: linear-gradient(90deg, var(--red-deep), var(--red) 70%, var(--red-glow));
-  box-shadow: 0 0 12px rgba(255,45,70,0.6);
+  box-shadow: 0 0 12px rgba(var(--accent-rgb), 0.6);
   transition: width 0.35s cubic-bezier(.2,.8,.2,1);
 }
 
@@ -544,7 +631,7 @@ body {
 
 .star-icon.is-lit {
   color: var(--red-glow);
-  text-shadow: 0 0 10px rgba(255,45,70,0.65);
+  text-shadow: 0 0 10px rgba(var(--accent-rgb), 0.65);
 }
 
 
@@ -606,7 +693,7 @@ body {
   flex-wrap: wrap;
 }
 
-.preset-row:hover { background: rgba(255,45,70,0.035); }
+.preset-row:hover { background: rgba(var(--accent-rgb), 0.035); }
 
 .preset-info { display: flex; flex-direction: column; gap: 3px; min-width: 160px; }
 
@@ -663,7 +750,7 @@ body {
   background: var(--panel);
   border: 1px solid var(--line);
   border-radius: 4px;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,45,70,0.08);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(var(--accent-rgb), 0.08);
 }
 
 .modal-head {
@@ -754,7 +841,7 @@ body {
   border-radius: 4px;
   padding: 14px 16px;
   z-index: 200;
-  box-shadow: 0 8px 30px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,45,70,0.1);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6), 0 0 0 1px rgba(var(--accent-rgb), 0.1);
 }
 
 .desc-popover-title {
@@ -794,4 +881,107 @@ body {
   letter-spacing: 0.03em;
   z-index: 300;
   box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+}
+
+/* ---------- Reader banner + Read Only checkbox ---------- */
+.reader-banner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  padding: 10px 16px;
+  background: var(--panel-alt);
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+
+.reader-banner-label {
+  font-family: var(--font-display);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--red-glow);
+}
+
+.reader-checkbox-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.reader-checkbox-wrap input[type="checkbox"] {
+  accent-color: var(--red);
+  width: 14px;
+  height: 14px;
+  cursor: pointer;
+}
+
+/* ---------- Reader mode (view-only permalinks, ?reader=true) ---------- */
+body.is-reader-mode .tabs,
+body.is-reader-mode .modifier-panel,
+body.is-reader-mode .presets-panel,
+body.is-reader-mode .copy-list-row,
+body.is-reader-mode .masthead-actions {
+  display: none !important;
+}
+
+body.is-reader-mode .layout {
+  grid-template-columns: 1fr;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+body.is-reader-mode .summary-panel {
+  position: static;
+}
+
+/* ---------- Mobile refinements ---------- */
+@media (max-width: 640px) {
+  .masthead-inner { padding: 14px 16px; gap: 12px; }
+  .brand-title { font-size: 17px; }
+
+  .masthead-actions { width: 100%; }
+  .version-select-wrap { flex: 1 1 auto; justify-content: space-between; }
+  .masthead-actions .btn { flex: 1 1 auto; justify-content: center; padding: 10px 12px; }
+
+  .reader-banner { padding: 10px 14px; justify-content: space-between; }
+
+  .tabs {
+    padding: 10px 12px 0;
+    gap: 6px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+  .tab { padding: 10px 14px; white-space: nowrap; }
+
+  .layout { padding: 14px; gap: 12px; }
+
+  .mod-row { grid-template-columns: 36px 1fr 56px; }
+  .mod-name-btn { font-size: 13px; padding: 13px 4px; }
+  .mod-queue { width: 36px; height: 48px; }
+  .mod-boost { padding-right: 14px; }
+
+  .summary-panel { position: static; }
+
+  .presets-panel-actions { width: 100%; }
+  .presets-panel-actions .btn { flex: 1 1 auto; justify-content: center; }
+
+  .preset-row { flex-direction: column; align-items: flex-start; }
+  .preset-actions { width: 100%; }
+  .preset-actions .btn { flex: 1 1 auto; justify-content: center; }
+
+  .copy-list-row { flex-direction: column; align-items: stretch; gap: 10px; }
+  .copy-list-row .btn { justify-content: center; }
+
+  .modal { max-width: 100%; }
+  .modal-actions { flex-wrap: wrap; }
+  .modal-actions .btn { flex: 1 1 auto; justify-content: center; }
+
+  .desc-popover { max-width: calc(100vw - 32px); }
 }

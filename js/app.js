@@ -39,8 +39,12 @@
   var TIER_FILES = ["1", "2", "3", "4"];
   var DATA_DIR = "data/";
   var VERSIONS_MANIFEST = DATA_DIR + "versions.json";
+  var CONFIG_MIGRATION_URL = DATA_DIR + "config_migration.json";
+  var CONFIG_DISABLE_URL = DATA_DIR + "config_disable.json";
+  var CONFIG_THEME_URL = DATA_DIR + "config_theme.json";
   var SELECTION_KEY_PREFIX = "mc_selection::"; // + version slug
   var LAST_VERSION_KEY = "mc_last_version";
+  var THEME_KEY = "mc_theme";
   var PRESETS_DB_NAME = "modifier_console_db";
   var PRESETS_DB_VERSION = 1;
   var PRESETS_STORE = "presets";
@@ -62,8 +66,16 @@
       Array<{id, name, versionSlug, mods:[names], createdAt, updatedAt}> */
   var customPresets = [];
 
+  /** data/config_migration.json: { oldSlug: newSlug, ... } */
+  var configMigration = {};
+  /** data/config_disable.json: [slug, ...] hidden from the version dropdown */
+  var disabledVersions = [];
+  /** data/config_theme.json: { default, themes:[{slug,label}] } */
+  var themesManifest = { default: "bloxy-red", themes: [{ slug: "bloxy-red", label: "Bloxy Red (Default)" }] };
+
   var versionsManifest = { default: "", versions: [] };
   var currentVersion = "";
+  var readerMode = false;
 
   var selected = new Set();
   var starMap = { zero: 0, one: 50, two: 150, three: 250, four: 350 };
@@ -81,15 +93,39 @@
   function init() {
     cacheEls();
     captureDefaultMeta();
+    detectReaderMode();
     bindGlobalUI();
     requestPersistentStorage();
 
-    fetchJSON(VERSIONS_MANIFEST)
-      .then(function (manifest) {
-        versionsManifest = normalizeManifest(manifest);
+    Promise.all([
+      fetchJSON(VERSIONS_MANIFEST),
+      fetchJSONOptional(CONFIG_MIGRATION_URL),
+      fetchJSONOptional(CONFIG_DISABLE_URL),
+      fetchJSONOptional(CONFIG_THEME_URL)
+    ])
+      .then(function (results) {
+        configMigration = normalizeMigrationMap(results[1]);
+        migrateLocalStorageSelections();
+        disabledVersions = normalizeDisabledList(results[2]);
+        themesManifest = normalizeThemesManifest(results[3]);
+
+        populateThemeSelect();
+        applyInitialTheme();
+
+        versionsManifest = normalizeManifest(results[0]);
         populateVersionSelect();
         var initialVersion = resolveInitialVersion();
-        return switchToVersion(initialVersion, { fromURL: true });
+        var rawCf = new URLSearchParams(window.location.search).get("cf");
+
+        return switchToVersion(initialVersion, { fromURL: true }).then(function () {
+          // The URL named an old, since-renamed slug — rewrite the
+          // address bar with the canonical one so a bookmarked/shared
+          // old link self-corrects, whether or not it also had a ?b=.
+          if (rawCf && rawCf !== currentVersion) {
+            var isReaderLink = new URLSearchParams(window.location.search).get("reader") === "true";
+            setPermalinkURL(isReaderLink);
+          }
+        });
       })
       .catch(function (err) {
         showError(err);
@@ -110,7 +146,11 @@
     els.starNextLabel = document.getElementById("star-next-label");
     els.tabs = Array.prototype.slice.call(document.querySelectorAll(".tab"));
     els.versionSelect = document.getElementById("version-select");
+    els.themeSelect = document.getElementById("theme-select");
     els.ogFormatSelect = document.getElementById("og-format-select");
+    els.readerCheckbox = document.getElementById("reader-checkbox");
+    els.readerBanner = document.getElementById("reader-banner");
+    els.readerEditLink = document.getElementById("reader-edit-link");
     els.permalinkBtn = document.getElementById("permalink-btn");
     els.resetBtn = document.getElementById("reset-btn");
     els.popover = document.getElementById("desc-popover");
@@ -150,6 +190,24 @@
       : "";
   }
 
+  // ?reader=true opens a stripped-down, non-interactive view: just the
+  // summary list and star gauge, nothing else. Purely a display mode —
+  // it's read once at load, doesn't watch for live changes, and never
+  // writes to storage.
+  function detectReaderMode() {
+    var params = new URLSearchParams(window.location.search);
+    readerMode = params.get("reader") === "true";
+    document.body.classList.toggle("is-reader-mode", readerMode);
+    if (readerMode && els.readerBanner) {
+      els.readerBanner.hidden = false;
+      if (els.readerEditLink) {
+        var url = new URL(window.location.href);
+        url.searchParams.delete("reader");
+        els.readerEditLink.href = url.toString();
+      }
+    }
+  }
+
   function bindGlobalUI() {
     els.tabs.forEach(function (tab) {
       tab.addEventListener("click", function () {
@@ -168,6 +226,14 @@
       clearURLParams();
       switchToVersion(slug, { fromURL: false, clearSelection: true });
     });
+
+    if (els.themeSelect) {
+      els.themeSelect.addEventListener("change", function () {
+        var slug = els.themeSelect.value;
+        document.documentElement.setAttribute("data-theme", slug);
+        writeSavedTheme(slug);
+      });
+    }
 
     els.permalinkBtn.addEventListener("click", copyPermalink);
     els.resetBtn.addEventListener("click", resetAll);
@@ -226,9 +292,13 @@
     return { default: def, versions: versions };
   }
 
+  // data/config_disable.json is hidden from the public dropdown only —
+  // still directly reachable via ?cf=<slug>, so an in-dev/rewrite
+  // version stays testable without being publicly browsable.
   function populateVersionSelect() {
     els.versionSelect.innerHTML = "";
     versionsManifest.versions.forEach(function (v) {
+      if (disabledVersions.indexOf(v.slug) !== -1) return;
       var opt = document.createElement("option");
       opt.value = v.slug;
       opt.textContent = v.label || v.slug;
@@ -236,13 +306,34 @@
     });
   }
 
+  // If the currently-active version is disabled (someone linked directly
+  // to it, e.g. for dev preview), show it in the dropdown anyway while
+  // it's active, tagged so it's clear it's not a normal public option.
+  function ensureCurrentVersionInSelect(slug) {
+    var exists = Array.prototype.some.call(els.versionSelect.options, function (o) {
+      return o.value === slug;
+    });
+    if (exists) return;
+    var v = versionsManifest.versions.filter(function (x) { return x.slug === slug; })[0];
+    var opt = document.createElement("option");
+    opt.value = slug;
+    opt.textContent = (v && v.label ? v.label : slug) + " (dev)";
+    els.versionSelect.appendChild(opt);
+  }
+
   function resolveInitialVersion() {
     var params = new URLSearchParams(window.location.search);
-    var cf = params.get("cf");
-    if (cf && versionExists(cf)) return cf;
+    var cfRaw = params.get("cf");
+    if (cfRaw) {
+      var cfResolved = resolveMigratedSlug(cfRaw);
+      if (versionExists(cfResolved)) return cfResolved;
+    }
 
     var last = readLastVersion();
-    if (last && versionExists(last)) return last;
+    if (last) {
+      var lastResolved = resolveMigratedSlug(last);
+      if (versionExists(lastResolved)) return lastResolved;
+    }
 
     return versionsManifest.default;
   }
@@ -267,6 +358,119 @@
     }
   }
 
+  /* ---------------- config_migration.json (renamed version slugs) ---------------- */
+
+  // { "oldSlug": "newSlug", ... } — valid JSON version of the format
+  // requested (the original used a bare object-of-key with no value,
+  // which isn't valid JSON on its own; this is a plain string map).
+  function normalizeMigrationMap(raw) {
+    var map = {};
+    if (raw && typeof raw === "object") {
+      Object.keys(raw).forEach(function (k) {
+        if (typeof raw[k] === "string" && raw[k].length) map[k] = raw[k];
+      });
+    }
+    return map;
+  }
+
+  // Follows the rename chain (a slug can be renamed more than once
+  // across updates) to its final slug. Guards against an accidental
+  // cycle in the JSON by never revisiting a slug.
+  function resolveMigratedSlug(slug) {
+    var seen = {};
+    var current = slug;
+    while (configMigration[current] && !seen[current]) {
+      seen[current] = true;
+      current = configMigration[current];
+    }
+    return current;
+  }
+
+  // One-time sweep at boot: if a cached selection exists under an old,
+  // since-renamed slug's storage key and nothing exists yet under the
+  // new slug's key, move it over. Custom presets are migrated
+  // separately, in loadPresetsForVersion(), since that's where their
+  // records get read.
+  function migrateLocalStorageSelections() {
+    try {
+      Object.keys(configMigration).forEach(function (oldSlug) {
+        var newSlug = resolveMigratedSlug(oldSlug);
+        var oldKey = SELECTION_KEY_PREFIX + oldSlug;
+        var newKey = SELECTION_KEY_PREFIX + newSlug;
+        var oldVal = localStorage.getItem(oldKey);
+        if (oldVal !== null && localStorage.getItem(newKey) === null) {
+          localStorage.setItem(newKey, oldVal);
+        }
+        if (oldVal !== null) localStorage.removeItem(oldKey);
+      });
+    } catch (e) {
+      /* localStorage unavailable — nothing to migrate */
+    }
+  }
+
+  /* ---------------- config_disable.json (hide in-dev versions) ---------------- */
+
+  // Valid JSON version of the format requested (a bare set literal like
+  // {"slug", ...} isn't valid JSON) — a plain array of slugs.
+  function normalizeDisabledList(raw) {
+    return Array.isArray(raw) ? raw.filter(function (s) { return typeof s === "string"; }) : [];
+  }
+
+  /* ---------------- config_theme.json (color themes) ---------------- */
+
+  function normalizeThemesManifest(raw) {
+    var themes = Array.isArray(raw && raw.themes) ? raw.themes : [];
+    themes = themes.filter(function (t) {
+      return t && typeof t.slug === "string" && t.slug.length;
+    });
+    if (!themes.length) {
+      themes = [{ slug: "bloxy-red", label: "Bloxy Red (Default)" }];
+    }
+    var def = raw && raw.default;
+    if (!themes.some(function (t) { return t.slug === def; })) {
+      def = themes[0].slug;
+    }
+    return { default: def, themes: themes };
+  }
+
+  function populateThemeSelect() {
+    if (!els.themeSelect) return;
+    els.themeSelect.innerHTML = "";
+    themesManifest.themes.forEach(function (t) {
+      var opt = document.createElement("option");
+      opt.value = t.slug;
+      opt.textContent = t.label || t.slug;
+      els.themeSelect.appendChild(opt);
+    });
+  }
+
+  function themeExists(slug) {
+    return themesManifest.themes.some(function (t) { return t.slug === slug; });
+  }
+
+  function readSavedTheme() {
+    try {
+      return localStorage.getItem(THEME_KEY);
+    } catch (e) {
+      return null;
+    }
+  }
+
+  function writeSavedTheme(slug) {
+    try {
+      localStorage.setItem(THEME_KEY, slug);
+    } catch (e) {
+      /* ignore */
+    }
+  }
+
+  function applyInitialTheme() {
+    var saved = readSavedTheme();
+    var slug = saved && themeExists(saved) ? saved : themesManifest.default;
+    document.documentElement.setAttribute("data-theme", slug);
+    if (els.themeSelect) els.themeSelect.value = slug;
+  }
+
   /**
    * Load a version's data, rebuild the registry, and (re)hydrate
    * selection state, then render.
@@ -278,6 +482,7 @@
   function switchToVersion(slug, options) {
     options = options || {};
     currentVersion = slug;
+    ensureCurrentVersionInSelect(slug);
     els.versionSelect.value = slug;
     writeLastVersion(slug);
 
@@ -497,10 +702,25 @@
       function (results) {
         defaultPresets = normalizeDefaultPresets(results[0]);
         var allCustom = Array.isArray(results[1]) ? results[1] : [];
-        customPresets = allCustom.filter(function (p) {
-          return p && p.versionSlug === slug;
+
+        // Canonicalize any preset saved under a since-renamed version
+        // slug (see config_migration.json) — permanently rewritten in
+        // IndexedDB so this only has to happen once per preset.
+        var matching = [];
+        var migrationWrites = [];
+        allCustom.forEach(function (p) {
+          if (!p) return;
+          var resolvedSlug = resolveMigratedSlug(p.versionSlug);
+          if (resolvedSlug !== p.versionSlug) {
+            p.versionSlug = resolvedSlug;
+            migrationWrites.push(dbPutPreset(p));
+          }
+          if (resolvedSlug === slug) matching.push(p);
         });
+
+        customPresets = matching;
         renderPresets();
+        return Promise.all(migrationWrites);
       }
     );
   }
@@ -1079,9 +1299,11 @@
   function hydrateSelectionFromURLOrCache(slug) {
     var params = new URLSearchParams(window.location.search);
     var b = params.get("b");
-    var cf = params.get("cf");
+    var cfRaw = params.get("cf");
+    var cf = cfRaw ? resolveMigratedSlug(cfRaw) : null;
 
-    // Only trust ?b= for the version it was generated against.
+    // Only trust ?b= for the version it was generated against (after
+    // resolving any rename via config_migration.json).
     if (b && cf === slug) {
       var ids = decodeSequence(b);
       if (ids.length) {
@@ -1121,7 +1343,7 @@
 
   // Writes the current selection + version into the address bar as a
   // permalink. Only called explicitly from the Copy Permalink button.
-  function setPermalinkURL() {
+  function setPermalinkURL(isReaderLink) {
     var url = new URL(window.location.href);
     url.searchParams.set("cf", currentVersion);
     if (selected.size) {
@@ -1130,19 +1352,25 @@
     } else {
       url.searchParams.delete("b");
     }
+    if (isReaderLink) {
+      url.searchParams.set("reader", "true");
+    } else {
+      url.searchParams.delete("reader");
+    }
     window.history.replaceState({}, "", url.toString());
   }
 
-  // Strips ?b=/?cf= from the address bar and reverts any permalink
-  // preview meta tags back to their defaults. Called whenever the live
-  // selection/version diverges from whatever permalink might currently
-  // be shown in the URL, so the bar only ever shows params that
-  // accurately describe what's on screen.
+  // Strips ?b=/?cf=/?reader= from the address bar and reverts any
+  // permalink preview meta tags back to their defaults. Called whenever
+  // the live selection/version diverges from whatever permalink might
+  // currently be shown in the URL, so the bar only ever shows params
+  // that accurately describe what's on screen.
   function clearURLParams() {
     var url = new URL(window.location.href);
-    if (url.searchParams.has("b") || url.searchParams.has("cf")) {
+    if (url.searchParams.has("b") || url.searchParams.has("cf") || url.searchParams.has("reader")) {
       url.searchParams.delete("b");
       url.searchParams.delete("cf");
+      url.searchParams.delete("reader");
       window.history.replaceState({}, "", url.toString());
     }
     applyOgFormat("none");
@@ -1424,13 +1652,14 @@
   /* ---------------- permalink + misc UI ---------------- */
 
   function copyPermalink() {
-    setPermalinkURL();
+    var isReaderLink = !!(els.readerCheckbox && els.readerCheckbox.checked);
+    setPermalinkURL(isReaderLink);
     applyOgFormat(els.ogFormatSelect ? els.ogFormatSelect.value : "none");
     var url = window.location.href;
     if (navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard
         .writeText(url)
-        .then(function () { showToast("Permalink copied"); })
+        .then(function () { showToast(isReaderLink ? "Read-only permalink copied" : "Permalink copied"); })
         .catch(function () { showToast(url); });
     } else {
       showToast(url);

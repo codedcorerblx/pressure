@@ -8,6 +8,17 @@
 <meta id="twitter-description" name="twitter:description" content="Welcome to what I called PMS, Pressure Modifiers Selector. Here you can share modifiers with other after selecting too!">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Modifier Console</title>
+<script>
+  // Applies the saved theme before first paint, so there's no flash of
+  // the default theme on load. Best-effort — falls through silently if
+  // localStorage is unavailable.
+  (function () {
+    try {
+      var theme = localStorage.getItem("mc_theme");
+      if (theme) document.documentElement.setAttribute("data-theme", theme);
+    } catch (e) { /* ignore */ }
+  })();
+</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -29,12 +40,20 @@
         <select id="version-select" class="version-select" aria-label="Data version"></select>
       </label>
       <label class="version-select-wrap">
+        <span class="version-select-label">Theme</span>
+        <select id="theme-select" class="version-select" aria-label="Color theme"></select>
+      </label>
+      <label class="version-select-wrap">
         <span class="version-select-label">Preview</span>
         <select id="og-format-select" class="version-select" aria-label="Permalink preview format">
           <option value="none">None</option>
           <option value="short">Short</option>
           <option value="long">Long</option>
         </select>
+      </label>
+      <label class="reader-checkbox-wrap">
+        <input type="checkbox" id="reader-checkbox">
+        Read Only
       </label>
       <button id="permalink-btn" class="btn btn-ghost" type="button">
         <span class="btn-icon">&#128279;</span> Copy Permalink
@@ -45,6 +64,11 @@
     </div>
   </div>
 </header>
+
+<div id="reader-banner" class="reader-banner" hidden>
+  <span class="reader-banner-label">Read-only view</span>
+  <a id="reader-edit-link" class="btn btn-ghost btn-small" href="#">Open Editable Version</a>
+</div>
 
 <nav class="tabs" role="tablist" aria-label="Star tiers">
   <button class="tab active" data-tab="all" role="tab" aria-selected="true">All</button>
