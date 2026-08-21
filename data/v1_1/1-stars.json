@@ -99,6 +99,8 @@
     "One Time Use": {
       "desc": "Upon exiting a locker, it will delete itself.",
       "boost": 5
+    }
+  },
   {
     "Turret Upgrades": {
       "desc": "Turret lights will remain off, watch for where it's looking.",
