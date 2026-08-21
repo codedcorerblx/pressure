@@ -76,5 +76,11 @@
       "desc": "Must stay at max health, else decreases over time. Not compatible with \"Noodle Legs\"",
       "boost": 10
     }
+  },
+  {
+    "Slippery When Wet": {
+      "desc": "Puddles spawn everywhere, ragdoll on touch and harmless.",
+      "boost": 5
+    }
   }
 ]
