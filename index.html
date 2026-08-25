@@ -35,26 +35,32 @@
       <h1 class="brand-title">MODIFIER<span class="brand-title-accent">//</span>CONSOLE</h1>
     </div>
     <div class="masthead-actions">
-      <label class="version-select-wrap">
-        <span class="version-select-label">Version</span>
-        <select id="version-select" class="version-select" aria-label="Data version"></select>
-      </label>
-      <label class="version-select-wrap">
-        <span class="version-select-label">Theme</span>
-        <select id="theme-select" class="version-select" aria-label="Color theme"></select>
-      </label>
-      <label class="version-select-wrap">
-        <span class="version-select-label">Preview</span>
-        <select id="og-format-select" class="version-select" aria-label="Permalink preview format">
-          <option value="none">None</option>
-          <option value="short">Short</option>
-          <option value="long">Long</option>
-        </select>
-      </label>
-      <label class="reader-checkbox-wrap">
-        <input type="checkbox" id="reader-checkbox">
-        Read Only
-      </label>
+      <div id="masthead-settings-group" class="masthead-settings-group">
+        <label class="version-select-wrap">
+          <span class="version-select-label">Version</span>
+          <select id="version-select" class="version-select" aria-label="Data version"></select>
+        </label>
+        <label class="version-select-wrap">
+          <span class="version-select-label">Theme</span>
+          <select id="theme-select" class="version-select" aria-label="Color theme"></select>
+        </label>
+        <label class="version-select-wrap">
+          <span class="version-select-label">Preview</span>
+          <select id="og-format-select" class="version-select" aria-label="Permalink preview format">
+            <option value="none">None</option>
+            <option value="short">Short</option>
+            <option value="long">Long</option>
+          </select>
+        </label>
+        <label class="reader-checkbox-wrap">
+          <input type="checkbox" id="reader-checkbox">
+          Read Only
+        </label>
+      </div>
+      <span id="settings-anchor" hidden></span>
+      <button id="mobile-settings-btn" class="btn btn-ghost mobile-settings-btn" type="button">
+        <span class="btn-icon">&#9881;</span> Settings
+      </button>
       <button id="permalink-btn" class="btn btn-ghost" type="button">
         <span class="btn-icon">&#128279;</span> Copy Permalink
       </button>

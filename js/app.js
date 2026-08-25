@@ -151,6 +151,9 @@
     els.readerCheckbox = document.getElementById("reader-checkbox");
     els.readerBanner = document.getElementById("reader-banner");
     els.readerEditLink = document.getElementById("reader-edit-link");
+    els.mastheadSettingsGroup = document.getElementById("masthead-settings-group");
+    els.settingsAnchor = document.getElementById("settings-anchor");
+    els.mobileSettingsBtn = document.getElementById("mobile-settings-btn");
     els.permalinkBtn = document.getElementById("permalink-btn");
     els.resetBtn = document.getElementById("reset-btn");
     els.popover = document.getElementById("desc-popover");
@@ -237,6 +240,8 @@
 
     els.permalinkBtn.addEventListener("click", copyPermalink);
     els.resetBtn.addEventListener("click", resetAll);
+
+    if (els.mobileSettingsBtn) els.mobileSettingsBtn.addEventListener("click", openSettingsModal);
 
     if (els.copyListFormatBtns.length) {
       els.copyListFormatBtns.forEach(function (btn) {
@@ -1103,7 +1108,35 @@
   }
 
   function closeModal() {
+    // If the mobile Settings modal is open, it borrowed the live
+    // settings controls by moving them into modalBody (not cloning —
+    // same nodes, same listeners) — move them back to the masthead
+    // before hiding, so they're usable again in their normal spot.
+    if (
+      els.mastheadSettingsGroup &&
+      els.settingsAnchor &&
+      els.mastheadSettingsGroup.parentNode === els.modalBody
+    ) {
+      els.settingsAnchor.insertAdjacentElement("afterend", els.mastheadSettingsGroup);
+    }
     if (els.modalBackdrop) els.modalBackdrop.hidden = true;
+  }
+
+  // Mobile only (see the 640px media query): collapses Version/Theme/
+  // Preview/Read-Only into a single button so the masthead doesn't
+  // have to fit six controls on one row. Reparents the real, live
+  // controls into the modal rather than rebuilding them, so there's
+  // no separate mobile copy to keep in sync.
+  function openSettingsModal() {
+    openModal("Settings", function (body, actions, close) {
+      body.appendChild(els.mastheadSettingsGroup);
+      var doneBtn = document.createElement("button");
+      doneBtn.type = "button";
+      doneBtn.className = "btn btn-ghost";
+      doneBtn.textContent = "Done";
+      doneBtn.addEventListener("click", close);
+      actions.appendChild(doneBtn);
+    });
   }
 
   function openNameModal(title, initialValue, onConfirm) {

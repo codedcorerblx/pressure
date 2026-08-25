@@ -132,6 +132,10 @@ html, body {
   color: var(--text);
   font-family: var(--font-body);
   min-height: 100vh;
+  /* Safety net: nothing should ever cause horizontal page scroll —
+     if a future addition overflows, it clips instead of widening the
+     page and cutting off content off-screen. */
+  overflow-x: hidden;
 }
 
 /* Remove the browser's default blue focus ring everywhere... */
@@ -224,7 +228,21 @@ body {
 
 .brand-title-accent { color: var(--red); }
 
-.masthead-actions { display: flex; gap: 10px; }
+.masthead-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.masthead-settings-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.mobile-settings-btn { display: none; }
 
 .btn {
   font-family: var(--font-body);
@@ -942,12 +960,30 @@ body.is-reader-mode .summary-panel {
 
 /* ---------- Mobile refinements ---------- */
 @media (max-width: 640px) {
-  .masthead-inner { padding: 14px 16px; gap: 12px; }
+  .masthead-inner { padding: 14px 16px; gap: 10px; }
   .brand-title { font-size: 17px; }
 
+  /* Collapse Version/Theme/Preview/Read-Only into a single "Settings"
+     button that opens them in the modal (see openSettingsModal in
+     app.js) — otherwise six controls fight for one row and overflow.
+     Copy Permalink + Reset stay directly visible as the two most-used
+     actions. Desktop is untouched (rule only applies under 640px). */
   .masthead-actions { width: 100%; }
-  .version-select-wrap { flex: 1 1 auto; justify-content: space-between; }
+  .masthead-settings-group { display: none; }
+  .mobile-settings-btn { display: inline-flex; }
   .masthead-actions .btn { flex: 1 1 auto; justify-content: center; padding: 10px 12px; }
+
+  /* Inside the modal, the settings group is shown again (reparented
+     there by JS) — lay it out as a full-width vertical stack instead
+     of the inline row it uses in the masthead. */
+  .modal-body .masthead-settings-group {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  .modal-body .version-select-wrap { justify-content: space-between; }
+  .modal-body .version-select { flex: 1 1 auto; }
 
   .reader-banner { padding: 10px 14px; justify-content: space-between; }
 
