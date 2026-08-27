@@ -1,0 +1,93 @@
+{
+  "presets": [
+    {
+      "name": "Community's Decision: Best 2 Stars",
+      "mods": [
+        "Paranoia",
+        "Redeemer",
+        "NAVIgation Malfunction",
+        "Budget Cutbacks",
+        "Night Light: Off",
+        "Squid+",
+        "Sitcom",
+        "You Only Have Two Hands",
+        "Use When Found",
+        "Hot Potato",
+        "Friendly",
+        "Deception",
+        "Slippery When Wet",
+        "Rat Race"
+      ]
+    },
+    {
+      "name": "Community's Decision: Best 3 Stars",
+      "mods": [
+        "Up The Hate",
+        "So Much Variety",
+        "Hunted",
+        "Tight Security",
+        "Paranoia",
+        "Natural Resistance",
+        "Redeemer",
+        "One Time Use",
+        "Cereal",
+        "NAVIgation Malfunction",
+        "Budget Cutbacks",
+        "Night Light: Off",
+        "Art Portfolio",
+        "DOORS STUCK",
+        "Wet Floor? All Clean!",
+        "Squid+",
+        "Sitcom",
+        "You Only Have Two Hands",
+        "Use When Found",
+        "Hot Potato",
+        "Landyours",
+        "Subspace Tripmines",
+        "Friendly",
+        "Deception",
+        "Slippery When Wet"
+      ]
+    },
+    {
+      "name": "Community's Decision: Best 4 Stars",
+      "mods": [
+        "Up The Hate",
+        "So Much Variety",
+        "Sneak Attack",
+        "Hunted",
+        "Tight Security",
+        "Forgot To Pay The Bills",
+        "Paranoia",
+        "Natural Resistance",
+        "Redeemer",
+        "One Time Use",
+        "Turret Upgrades",
+        "Cereal",
+        "Always Eyefestation",
+        "NAVIgation Malfunction",
+        "Budget Cutbacks",
+        "Night Light: Off",
+        "Art Portfolio",
+        "DOORS STUCK",
+        "Glue",
+        "Wet Floor? All Clean!",
+        "Butterfingers",
+        "Squid+",
+        "Sitcom",
+        "You Only Have Two Hands",
+        "Use When Found",
+        "Hot Potato",
+        "Landyours",
+        "Explosive Storage",
+        "Subspace Tripmines",
+        "Friendly",
+        "Deception",
+        "Slippery When Wet",
+        "Rat Race",
+        "Noodle Legs",
+        "All Or Nothing"
+      ]
+    }
+  ]
+}

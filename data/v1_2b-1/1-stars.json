@@ -1,0 +1,116 @@
+[
+  {
+    "Admin Panel": {
+      "desc": "Grants access to the Admin Panel.",
+      "boost": -1000
+    }
+  },
+  {
+    "Streamer Polls": {
+      "desc": "Survive against the choices of viewers.",
+      "boost": -50
+    }
+  },
+  {
+    "Up The Ante": {
+      "desc": "Node spawns mildly increased.",
+      "boost": 10
+    }
+  },
+  {
+    "Up The Hate": {
+      "desc": "Node spawns largely increased.",
+      "boost": 20
+    }
+  },
+  {
+    "So Much Variety": {
+      "desc": "Angler is removed from the roster.",
+      "boost": 10
+    }
+  },
+  {
+    "Sneak Attack": {
+      "desc": "Nodes can spawn from the front.",
+      "boost": 10
+    }
+  },
+  {
+    "Hunted": {
+      "desc": "Listen for strong wind noises, adds Pipsqueak to the roster.",
+      "boost": 10
+    }
+  },
+  {
+    "GOM": {
+      "desc": "When the blue timer hits zero, hide in a locker, else lose HP.",
+      "boost": 15
+    }
+  },
+  {
+    "Tight Security": {
+      "desc": "Keycards no longer spawn, locked doors require a passcode.",
+      "boost": 5
+    }
+  },
+  {
+    "Light Work": {
+      "desc": "Listen for audio cues, rooms may be less lit.",
+      "boost": 10
+    }
+  },
+  {
+    "Forgot To Pay The Bills": {
+      "desc": "Rely heavily on audio cues, all rooms are dark.",
+      "boost": 20
+    }
+  },
+  {
+    "Closed For The Night": {
+      "desc": "The vent in Sebastian's room never opens, barring access to his shop. His room will not be locked.",
+      "boost": 5
+    }
+  },
+  {
+    "Paranoia": {
+      "desc": "Lockers will kick you out earlier, time your hiding.",
+      "boost": 10
+    }
+  },
+  {
+    "Natural Resistance": {
+      "desc": "All healing from items is halved.",
+      "boost": 5
+    }
+  },
+  {
+    "Good People Don't End Up Here": {
+      "desc": "Fake doors no longer emit visual cues, listen for breathing. Good People chances are increased.",
+      "boost": 5
+    }
+  },
+  {
+    "Redeemer": {
+      "desc": "Redeemer's minigame requires more mashing.",
+      "boost": 5
+    }
+  },
+  {
+    "One Time Use": {
+      "desc": "Upon exiting a locker, it will delete itself.",
+      "boost": 5
+    }
+  },
+  {
+    "Turret Upgrades": {
+      "desc": "Turret lights will remain off, watch for where it's looking.",
+      "boost": 5
+    }
+  },
+  {
+    "Free Trial": {
+      "desc": "Find a good hiding spot, when the timer hits zero, you will be forced to watch an unskippable advertisement.",
+      "boost": 10
+    }
+  }
+]

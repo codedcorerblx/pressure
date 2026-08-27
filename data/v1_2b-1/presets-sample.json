@@ -1,0 +1,23 @@
+{
+  "presets": [
+    {
+      "name": "Starter Pack",
+      "mods": ["Sneak Attack", "Light Work", "Cereal", "Glue"]
+    },
+    {
+      "name": "Chaos Run",
+      "mods": ["Up The Hate", "Hunted", "So Much Variety", "Butterfingers", "Hot Potato"]
+    },
+    {
+      "name": "Max Difficulty",
+      "mods": [
+        "Admin Panel",
+        "Deception",
+        "Interloper",
+        "Rat Race",
+        "All Or Nothing",
+        "Subspace Tripmines"
+      ]
+    }
+  ]
+}
