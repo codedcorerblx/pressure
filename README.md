@@ -20,21 +20,8 @@ I might create more tools related to Pressure, uncertain what it would be as of 
 │   ├── [F] config_migration.json
 │   ├── [F] config_theme.json
 │   ├── [D] v1_0
-│   │   ├── [F] 1-stars.json
-│   │   ├── [F] 2-stars.json
-│   │   ├── [F] 3-stars.json
-│   │   ├── [F] 4-stars.json
-│   │   ├── [F] conflict.json
-│   │   ├── [F] presets-sample.json
-│   │   └── [F] stars-map.json
 │   ├── [D] v1_1
-│   │   ├── [F] 1-stars.json
-│   │   ├── [F] 2-stars.json
-│   │   ├── [F] 3-stars.json
-│   │   ├── [F] 4-stars.json
-│   │   ├── [F] conflict.json
-│   │   ├── [F] presets-sample.json
-│   │   └── [F] stars-map.json
+│   ├── [D] v1_2
 │   └── [F] versions.json
 ├── [D] fonts
 │   └── [*] Zekton.ttf
