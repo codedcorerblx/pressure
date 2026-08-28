@@ -12,6 +12,12 @@
     }
   },
   {
+    "Is This Your Card?": {
+      "desc": "Spot the odd card when she spawn in by looking at that odd card until the card flip around, added Big Topper to the roster.",
+      "boost": 15
+    }
+  },
+  {
     "Its you! its me!": {
       "desc": "Coagulate spawns more often, if caught, you are controlled by it for 30 seconds.",
       "boost": 10

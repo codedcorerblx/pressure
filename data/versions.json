@@ -1,7 +1,8 @@
 {
-  "default": "v1_1",
+  "default": "v1_2",
   "versions": [
     { "slug": "v1_0", "label": "v1.0" },
-    { "slug": "v1_1", "label": "v1.1" }
+    { "slug": "v1_1", "label": "v1.1" },
+    { "slug": "v1_2", "label": "v1.2" }
   ]
 }
