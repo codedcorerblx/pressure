@@ -1,8 +1,9 @@
 {
   "default": "v1_2",
   "versions": [
-    { "slug": "v1_0", "label": "v1.0" },
-    { "slug": "v1_1", "label": "v1.1" },
-    { "slug": "v1_2", "label": "v1.2" }
+    { "slug": "v1_0", "label": "v1.0 | Grace Replacement" },
+    { "slug": "v1_1", "label": "v1.1 | Additional Mods" },
+    { "slug": "v1_2", "label": "v1.2 | Minor Bug Fixes" },
+    { "slug": "v1_3", "label": "v1.3 | Major Bug Fixes"}
   ]
 }
