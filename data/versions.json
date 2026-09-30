@@ -1,5 +1,5 @@
 {
-  "default": "v1_2",
+  "default": "v1_3",
   "versions": [
     { "slug": "v1_0", "label": "v1.0 | Grace Replacement" },
     { "slug": "v1_1", "label": "v1.1 | Additional Mods" },
